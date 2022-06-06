@@ -11,7 +11,7 @@ class Player {
         frameRow = 1,
         frameColumn = 1,
         maxFrames = 6,
-        state = 'stand'
+        state = 'standing'
     }) {
         this.image = image
         this.position = position
@@ -31,17 +31,22 @@ class Player {
         this.state = state
         this.frameColumn = 1
         switch (state) {
-            case 'walk':
+            case 'standing':
+                this.frameRow = 1
+                this.maxFrames = 6
+                break;;
+
+            case 'walking':
                 this.frameRow = 2
                 this.maxFrames = 6
                 break;
 
-            case 'attack':
+            case 'attacking':
                 this.frameRow = 3
                 this.maxFrames = 4
                 break;
 
-            case 'die':
+            case 'dead':
                 this.frameRow = 4
                 this.maxFrames = 3
                 break;
@@ -71,6 +76,18 @@ class Player {
         )
         c.restore(); // Restore the state as it was when this function was called
     }
+
+    move() {
+
+    }
+
+    attack() {
+
+    }
+
+    die() {
+
+    }
 }
 
 class Background {
@@ -85,8 +102,114 @@ class Background {
     }
 }
 
-function animate() {
+class Controller {
+    constructor({
+        /*
+        0: Not pressed
+        1: Pressed
+        2: 
+        */
+        w = 0,
+        a = 0,
+        s = 0,
+        d = 0,
+        space = 0,
 
+        moveKeys = []
+    }) {
+        this.w = w
+        this.a = a
+        this.s = s
+        this.d = d
+        this.space = space
+        this.moveKeys = moveKeys
+    }
+
+    listenKeysDown() {
+        document.addEventListener('keydown', (e) => {
+            //if(player.state == 'dead')
+
+            switch (e.key) {
+                case 'w':
+                    player.isMovingY = true
+                    player.moving.up = true
+                    player.moving.down = false
+                    break;
+                case 'a':
+                    player.isMovingX = true
+                    player.moving.left = true
+                    player.moving.right = false
+                    break;
+                case 's':
+                    player.isMovingY = true
+                    player.moving.down = true
+                    player.moving.up = false
+                    break;
+                case 'd':
+                    player.isMovingX = true
+                    player.moving.right = true
+                    player.moving.left = false
+                    break;
+                case ' ':
+                    player.isMovingX = false
+                    player.isMovingY = false
+                    player.moving.right = false
+                    player.moving.left = false
+                    player.moving.up = false
+                    player.moving.down = false
+                    if (player.state != 'attacking') {
+                        player.changeState('attacking')
+                    }
+                    break;
+            }
+
+            //Change player state to 'walking' if player is moving and state is not 'walking' yet
+            if ((player.isMovingX || player.isMovingY) && player.state != 'walking') {
+                player.changeState('walking')
+            }
+            //Give player a debuff on velocity if player starts walking on both axis
+            if ((player.isMovingX && player.isMovingY) && (player.bothAxisDebuff == false)) {
+                player.bothAxisDebuff = true
+                player.velocity /= Math.sqrt(2)
+            }
+        })
+    }
+
+    listenKeysUp() {
+        document.addEventListener('keyup', (e) => {
+            switch (e.key) {
+                case 'w':
+                    player.isMovingY = false
+                    player.moving.up = false
+                    break;
+                case 'a':
+                    player.isMovingX = false
+                    player.moving.left = false
+                    break;
+                case 's':
+                    player.isMovingY = false
+                    player.moving.down = false
+                    break;
+                case 'd':
+                    player.isMovingX = false
+                    player.moving.right = false
+                    break;
+            }
+
+            //Change player state to 'standing' if player stop moving and state is not 'standing' yet
+            if (((player.isMovingX || player.isMovingY) == false) && player.state != 'standing') {
+                player.changeState('standing')
+            }
+            //Remove player debuff on velocity if player is no longer moving on both axis
+            if (((player.isMovingX && player.isMovingY) == false) && (player.bothAxisDebuff == true)) {
+                player.bothAxisDebuff = false
+                player.velocity *= Math.sqrt(2)
+            }
+        })
+    }
+}
+
+function animate() {
     background.draw(player.position.x, player.position.y)
     player.draw()
 
@@ -130,84 +253,10 @@ playerImage.src = './img/player.png'
 
 const background = new Background({})
 const player = new Player({})
+const controller = new Controller({})
 
 let t = 0 //Count number of frames since animate starts
 animate()
 
-document.addEventListener('keydown', (e) => {
-    //if(player.state == 'die')
-    
-    switch (e.key) {
-        case 'w':
-            player.isMovingY = true
-            player.moving.up = true
-            player.moving.down = false
-            break;
-        case 'a':
-            player.isMovingX = true
-            player.moving.left = true
-            player.moving.right = false
-            break;
-        case 's':
-            player.isMovingY = true
-            player.moving.down = true
-            player.moving.up = false
-            break;
-        case 'd':
-            player.isMovingX = true
-            player.moving.right = true
-            player.moving.left = false
-            break;
-        case ' ':
-            player.isMovingX = false
-            player.isMovingY = false
-            player.moving.right = false
-            player.moving.left = false
-            player.moving.up = false
-            player.moving.down = false
-            if (player.state != 'attack') {
-                player.changeState('attack')
-            }
-            break;
-    }
-
-    //Change player state to 'walk' if player is moving and state is not 'walk' yet
-    if ((player.isMovingX || player.isMovingY) && player.state != 'walk') {
-        player.changeState('walk')
-    }
-    //Give player a debuff on velocity if player starts walking on both axis
-    if ((player.isMovingX && player.isMovingY) && (player.bothAxisDebuff == false)) {
-        player.bothAxisDebuff = true
-        player.velocity /= Math.sqrt(2)
-    }
-})
-document.addEventListener('keyup', (e) => {
-    switch (e.key) {
-        case 'w':
-            player.isMovingY = false
-            player.moving.up = false
-            break;
-        case 'a':
-            player.isMovingX = false
-            player.moving.left = false
-            break;
-        case 's':
-            player.isMovingY = false
-            player.moving.down = false
-            break;
-        case 'd':
-            player.isMovingX = false
-            player.moving.right = false
-            break;
-    }
-
-    //Change player state to 'stand' if player stop moving and state is not 'stand' yet
-    if (((player.isMovingX || player.isMovingY) == false) && player.state != 'stand') {
-        player.changeState('stand')
-    }
-    //Remove player debuff on velocity if player is no longer moving on both axis
-    if (((player.isMovingX && player.isMovingY) == false) && (player.bothAxisDebuff == true)) {
-        player.bothAxisDebuff = false
-        player.velocity *= Math.sqrt(2)
-    }
-})
+controller.listenKeysDown()
+controller.listenKeysUp()
