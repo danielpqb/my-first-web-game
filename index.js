@@ -1,7 +1,7 @@
 class Player {
     constructor({
         image = playerImage,
-        position = { x: 0, y: 0 },
+        position = { x: -1900, y: -1500 },
         moving = { right: false, left: false, up: false, down: false },
         isMovingX = false,
         isMovingY = false,
@@ -93,18 +93,6 @@ function animate() {
     //Animate Player every 10 frames
     if (t % 10 == 0) {
         player.frameColumn = (player.frameColumn % player.maxFrames) + 1
-
-        //Change player state animation
-
-        
-        
-        /*
-            if ((player.isMovingX || player.isMovingY) && (player.state != 'walk')) {
-                player.changeState('walk')
-            }
-            else {
-                player.state = 'stand'
-            }*/
     }
 
     //Move background position if player is moving
@@ -146,28 +134,44 @@ const player = new Player({})
 let t = 0 //Count number of frames since animate starts
 animate()
 
-player.changeState('stand')
-
 document.addEventListener('keydown', (e) => {
+    //if(player.state == 'die')
+    
     switch (e.key) {
         case 'w':
             player.isMovingY = true
             player.moving.up = true
+            player.moving.down = false
             break;
         case 'a':
             player.isMovingX = true
             player.moving.left = true
+            player.moving.right = false
             break;
         case 's':
             player.isMovingY = true
             player.moving.down = true
+            player.moving.up = false
             break;
         case 'd':
             player.isMovingX = true
             player.moving.right = true
+            player.moving.left = false
+            break;
+        case ' ':
+            player.isMovingX = false
+            player.isMovingY = false
+            player.moving.right = false
+            player.moving.left = false
+            player.moving.up = false
+            player.moving.down = false
+            if (player.state != 'attack') {
+                player.changeState('attack')
+            }
             break;
     }
 
+    //Change player state to 'walk' if player is moving and state is not 'walk' yet
     if ((player.isMovingX || player.isMovingY) && player.state != 'walk') {
         player.changeState('walk')
     }
@@ -196,7 +200,8 @@ document.addEventListener('keyup', (e) => {
             player.moving.right = false
             break;
     }
-    
+
+    //Change player state to 'stand' if player stop moving and state is not 'stand' yet
     if (((player.isMovingX || player.isMovingY) == false) && player.state != 'stand') {
         player.changeState('stand')
     }
