@@ -2,39 +2,40 @@ class Player {
     constructor({
         image = playerImage,
         position = { x: -1900, y: -1500 },
-        moving = { right: false, left: false, up: false, down: false },
-        isMovingX = false,
-        isMovingY = false,
         velocity = 1,
-        bothAxisDebuff = false,
-        direction = 1,
+        direction = 0,
+        isMirrored = false,
         frameRow = 1,
         frameColumn = 1,
         maxFrames = 6,
-        state = 'standing'
+        state = 'standing',
+        snared = false,
+        isMoving = false
     }) {
         this.image = image
         this.position = position
-        this.moving = moving
-        this.isMovingX = isMovingX
-        this.isMovingY = isMovingY
         this.velocity = velocity
-        this.bothAxisDebuff = bothAxisDebuff
         this.direction = direction
+        this.isMirrored = isMirrored
         this.frameRow = frameRow
         this.frameColumn = frameColumn
         this.maxFrames = maxFrames
         this.state = state
+        this.snared = snared
+        this.isMoving = isMoving
     }
 
-    changeState(state) {
-        this.state = state
-        this.frameColumn = 1
+    changeState(state,) {
+        if (this.state != state) {
+            this.frameColumn = 1
+            this.state = state
+        }
+
         switch (state) {
             case 'standing':
                 this.frameRow = 1
                 this.maxFrames = 6
-                break;;
+                break;
 
             case 'walking':
                 this.frameRow = 2
@@ -60,8 +61,8 @@ class Player {
 
     draw() {
         c.save();  // Save the current canvas state
-        if (player.direction == 0) {
-            c.setTransform(-1, 0, 0, 1, canvas.width, 0); //Invert image horizontaly
+        if (player.isMirrored) {
+            c.setTransform(-1, 0, 0, 1, canvas.width, 0); //Invert image horizontaly to the left
         }
         c.drawImage(
             this.image,
@@ -78,11 +79,125 @@ class Player {
     }
 
     move() {
+        //If player is impeded to move, stop here
+        if (player.snared == true || player.state == 'attacking') {
+            player.isMoving = false
+            return
+        }
 
+        //Wich move keys are pressed
+        controller.moveKeysDown.w = isKeyDown('w')
+        controller.moveKeysDown.a = isKeyDown('a')
+        controller.moveKeysDown.s = isKeyDown('s')
+        controller.moveKeysDown.d = isKeyDown('d')
+
+        //If player is not trying to move
+        if (!controller.moveKeysDown.w &&
+            !controller.moveKeysDown.a &&
+            !controller.moveKeysDown.s &&
+            !controller.moveKeysDown.d
+        ) {
+            player.isMoving = false
+            return
+        }
+
+        //Wich direction should the player go? (1 to 8)
+        let y = 0;
+        let x = 0;
+
+        //Up or Down
+        if (controller.moveKeysDown.w && controller.moveKeysDown.s) { //Both pressed
+            if (controller.lastKeyWS == 'w') {
+                y = 1 //Up
+            }
+            else {
+                y = 5 //Down
+            }
+        }
+        else { //Only one pressed
+            if (controller.moveKeysDown.w) {
+                y = 1 //Up
+            }
+            else if (controller.moveKeysDown.s) {
+                y = 5 //Down
+            }
+        }
+
+        //Right or Left
+        if (controller.moveKeysDown.d && controller.moveKeysDown.a) { //Both pressed
+            if (controller.lastKeyAD == 'd') {
+                x = 3 //Right
+                player.isMirrored = false //Points Right
+            }
+            else {
+                x = 7 //Left
+                player.isMirrored = true //Points Left
+            }
+        }
+        else { //Only one pressed
+            if (controller.moveKeysDown.d) {
+                x = 3 //Right
+                player.isMirrored = false //Points Right
+            }
+            else if (controller.moveKeysDown.a) {
+                x = 7 //Left
+                player.isMirrored = true //Points Left
+            }
+        }
+
+        //Trying to walk on both axis
+        if (x > 0 && y > 0) {
+            if (y == 1 && x == 7) {
+                player.direction = 8 //Up+Left
+            }
+            else {
+                player.direction = (x + y) / 2 //Up+Right || Down+Right || Down+Left
+            }
+        }
+        //Trying to walk on only one axis
+        else {
+            player.direction = x + y //Up || Down || Right || Left
+        }
+
+        //Move background position if player is trying to move (player starts to move)
+        player.isMoving = true
+        player.changeState('walking')
+        switch (player.direction) {
+            case 1: //Up
+                player.position.y += 5 * player.velocity
+                break;
+            case 2: //Up+Right
+                player.position.y += 5 * player.velocity / Math.sqrt(2)
+                player.position.x -= 5 * player.velocity / Math.sqrt(2)
+                break;
+            case 3: //Right
+                player.position.x -= 5 * player.velocity
+                break;
+            case 4: //Down+Right
+                player.position.y -= 5 * player.velocity / Math.sqrt(2)
+                player.position.x -= 5 * player.velocity / Math.sqrt(2)
+                break;
+            case 5: //Down
+                player.position.y -= 5 * player.velocity
+                break;
+            case 6: //Down+Left
+                player.position.y -= 5 * player.velocity / Math.sqrt(2)
+                player.position.x += 5 * player.velocity / Math.sqrt(2)
+                break;
+            case 7: //Left
+                player.position.x += 5 * player.velocity
+                break;
+            case 8: //Up+left
+                player.position.y += 5 * player.velocity / Math.sqrt(2)
+                player.position.x += 5 * player.velocity / Math.sqrt(2)
+                break;
+            default:
+                return
+        }
     }
 
     attack() {
-
+        player.changeState('attacking')
     }
 
     die() {
@@ -104,150 +219,102 @@ class Background {
 
 class Controller {
     constructor({
-        /*
-        0: Not pressed
-        1: Pressed
-        2: 
-        */
-        w = 0,
-        a = 0,
-        s = 0,
-        d = 0,
-        space = 0,
-
-        moveKeys = []
+        t = 0, //Count number of frames since animate starts
+        lastKeyWS = '', //Was 'w' or 's' the Last Key Pressed
+        lastKeyAD = '', //Was 'a' or 'd' the Last Key Pressed
+        moveKeysDown = { w: isKeyDown('w'), a: isKeyDown('a'), s: isKeyDown('s'), d: isKeyDown('d') },
+        attackKeyDown = { space: isKeyDown(' ') }
     }) {
-        this.w = w
-        this.a = a
-        this.s = s
-        this.d = d
-        this.space = space
-        this.moveKeys = moveKeys
+        this.t = t
+        this.lastKeyWS = lastKeyWS
+        this.lastKeyAD = lastKeyAD
+        this.moveKeysDown = moveKeysDown
+        this.attackKeyDown = attackKeyDown
     }
 
+    //Listen wich keys was pressed down
     listenKeysDown() {
         document.addEventListener('keydown', (e) => {
-            //if(player.state == 'dead')
-
             switch (e.key) {
                 case 'w':
-                    player.isMovingY = true
-                    player.moving.up = true
-                    player.moving.down = false
-                    break;
-                case 'a':
-                    player.isMovingX = true
-                    player.moving.left = true
-                    player.moving.right = false
+                    this.lastKeyWS = 'w'
                     break;
                 case 's':
-                    player.isMovingY = true
-                    player.moving.down = true
-                    player.moving.up = false
+                    this.lastKeyWS = 's'
+                    break;
+                case 'a':
+                    this.lastKeyAD = 'a'
                     break;
                 case 'd':
-                    player.isMovingX = true
-                    player.moving.right = true
-                    player.moving.left = false
+                    this.lastKeyAD = 'd'
                     break;
                 case ' ':
-                    player.isMovingX = false
-                    player.isMovingY = false
-                    player.moving.right = false
-                    player.moving.left = false
-                    player.moving.up = false
-                    player.moving.down = false
-                    if (player.state != 'attacking') {
-                        player.changeState('attacking')
-                    }
+                    player.attack()
                     break;
-            }
-
-            //Change player state to 'walking' if player is moving and state is not 'walking' yet
-            if ((player.isMovingX || player.isMovingY) && player.state != 'walking') {
-                player.changeState('walking')
-            }
-            //Give player a debuff on velocity if player starts walking on both axis
-            if ((player.isMovingX && player.isMovingY) && (player.bothAxisDebuff == false)) {
-                player.bothAxisDebuff = true
-                player.velocity /= Math.sqrt(2)
-            }
-        })
-    }
-
-    listenKeysUp() {
-        document.addEventListener('keyup', (e) => {
-            switch (e.key) {
-                case 'w':
-                    player.isMovingY = false
-                    player.moving.up = false
-                    break;
-                case 'a':
-                    player.isMovingX = false
-                    player.moving.left = false
-                    break;
-                case 's':
-                    player.isMovingY = false
-                    player.moving.down = false
-                    break;
-                case 'd':
-                    player.isMovingX = false
-                    player.moving.right = false
-                    break;
-            }
-
-            //Change player state to 'standing' if player stop moving and state is not 'standing' yet
-            if (((player.isMovingX || player.isMovingY) == false) && player.state != 'standing') {
-                player.changeState('standing')
-            }
-            //Remove player debuff on velocity if player is no longer moving on both axis
-            if (((player.isMovingX && player.isMovingY) == false) && (player.bothAxisDebuff == true)) {
-                player.bothAxisDebuff = false
-                player.velocity *= Math.sqrt(2)
             }
         })
     }
 }
 
+//Do something every frame
 function animate() {
-    background.draw(player.position.x, player.position.y)
-    player.draw()
 
     //Animate Player every 10 frames
-    if (t % 10 == 0) {
-        player.frameColumn = (player.frameColumn % player.maxFrames) + 1
+    if (controller.t % 10 == 0) {
+        switch (player.state) {
+            case 'attacking':
+                if (player.frameColumn < player.maxFrames) {
+                    player.frameColumn++
+                }
+                else {
+                    player.changeState('standing')
+                }
+                break;
+            case 'walking':
+                if (player.isMoving == true) {
+                    player.frameColumn = (player.frameColumn % player.maxFrames) + 1
+                }
+                else {
+                    player.changeState('standing')
+                }
+                break;
+            default:
+                player.frameColumn = (player.frameColumn % player.maxFrames) + 1
+                break;
+        }
     }
 
-    //Move background position if player is moving
-    if (player.moving.up) {
-        player.position.y += 5 * player.velocity
-    }
-    if (player.moving.left) {
-        player.direction = 0
-        player.position.x += 5 * player.velocity
-    }
-    if (player.moving.down) {
-        player.position.y -= 5 * player.velocity
-    }
-    if (player.moving.right) {
-        player.direction = 1
-        player.position.x -= 5 * player.velocity
-    }
+    background.draw(player.position.x, player.position.y) //Draw background
+    player.draw() //Draw player
 
-    t %= 216000 //Reset counter every hour
-    t++
+    player.move() //Move player
+
+
+
+
+    controller.t %= 216000 //Reset counter every hour
+    controller.t++
     window.requestAnimationFrame(animate) //60 FPS
+
 }
+
+//Return true or false if key is pressed
+const isKeyDown = (() => {
+    const state = {};
+
+    window.addEventListener('keyup', (e) => state[e.key] = false);
+    window.addEventListener('keydown', (e) => state[e.key] = true);
+
+    return (key) => state.hasOwnProperty(key) && state[key] || false;
+})();
 
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-
-canvas.width = 1024
-canvas.height = 576
+canvas.width = 1600
+canvas.height = 900
 
 const backgroundImage = new Image()
 backgroundImage.src = './img/background.png'
-
 const playerImage = new Image()
 playerImage.src = './img/player.png'
 
@@ -255,8 +322,8 @@ const background = new Background({})
 const player = new Player({})
 const controller = new Controller({})
 
-let t = 0 //Count number of frames since animate starts
 animate()
 
 controller.listenKeysDown()
-controller.listenKeysUp()
+//controller.listenKeysUp()
+
