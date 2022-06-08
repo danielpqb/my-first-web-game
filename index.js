@@ -1,7 +1,7 @@
 class Player {
     constructor({
         image = playerImage,
-        position = { x: -1900, y: -1500 },
+        position = { x: -1100, y: -1000 },
         velocity = 1,
         direction = 0,
         isMirrored = false,
@@ -314,7 +314,7 @@ canvas.width = 1600
 canvas.height = 900
 
 const backgroundImage = new Image()
-backgroundImage.src = './img/background.png'
+backgroundImage.src = './img/trainingMap.png'
 const playerImage = new Image()
 playerImage.src = './img/player.png'
 
@@ -322,8 +322,6 @@ const background = new Background({})
 const player = new Player({})
 const controller = new Controller({})
 
-animate()
-
 controller.listenKeysDown()
-//controller.listenKeysUp()
-
+animate()
+    
