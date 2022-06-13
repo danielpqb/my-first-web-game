@@ -1,7 +1,7 @@
 class Player {
     constructor({
+        position = { x: (canvas.width / 2 - 24), y: (canvas.height / 2 - 48) },
         image = playerImage,
-        position = { x: 0, y: 0 }, //Pixel
         velocity = 1,
         direction = 0,
         isMirrored = false,
@@ -80,7 +80,7 @@ class Player {
 
     move() {
         //If player is impeded to move, stop here
-        if (player.snared == true || player.state == 'attacking') {
+        if (player.snared === true || player.state === 'attacking') {
             player.isMoving = false
             return
         }
@@ -107,7 +107,7 @@ class Player {
 
         //Up or Down
         if (controller.moveKeysDown.w && controller.moveKeysDown.s) { //Both pressed
-            if (controller.lastKeyWS == 'w') {
+            if (controller.lastKeyWS === 'w') {
                 y = 1 //Up
             }
             else {
@@ -125,7 +125,7 @@ class Player {
 
         //Right or Left
         if (controller.moveKeysDown.d && controller.moveKeysDown.a) { //Both pressed
-            if (controller.lastKeyAD == 'd') {
+            if (controller.lastKeyAD === 'd') {
                 x = 3 //Right
                 player.isMirrored = false //Points Right
             }
@@ -147,7 +147,7 @@ class Player {
 
         //Trying to walk on both axis
         if (x > 0 && y > 0) {
-            if (y == 1 && x == 7) {
+            if (y === 1 && x === 7) {
                 player.direction = 8 //Up+Left
             }
             else {
@@ -159,41 +159,92 @@ class Player {
             player.direction = x + y //Up || Down || Right || Left
         }
 
+        //Save position to rollback if collided
+        const rollbackPosition = { x: controller.position.x, y: controller.position.y }
+
         //Move background position if player is trying to move (player starts to move)
         player.isMoving = true
         player.changeState('walking')
         switch (player.direction) {
             case 1: //Up
-                player.position.y += 5 * player.velocity
+                controller.position.y += 5 * player.velocity
                 break;
             case 2: //Up+Right
-                player.position.y += 5 * player.velocity / Math.sqrt(2)
-                player.position.x -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.y += 5 * player.velocity / Math.sqrt(2)
+                controller.position.x -= 5 * player.velocity / Math.sqrt(2)
                 break;
             case 3: //Right
-                player.position.x -= 5 * player.velocity
+                controller.position.x -= 5 * player.velocity
                 break;
             case 4: //Down+Right
-                player.position.y -= 5 * player.velocity / Math.sqrt(2)
-                player.position.x -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.y -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.x -= 5 * player.velocity / Math.sqrt(2)
                 break;
             case 5: //Down
-                player.position.y -= 5 * player.velocity
+                controller.position.y -= 5 * player.velocity
                 break;
             case 6: //Down+Left
-                player.position.y -= 5 * player.velocity / Math.sqrt(2)
-                player.position.x += 5 * player.velocity / Math.sqrt(2)
+                controller.position.y -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.x += 5 * player.velocity / Math.sqrt(2)
                 break;
             case 7: //Left
-                player.position.x += 5 * player.velocity
+                controller.position.x += 5 * player.velocity
                 break;
             case 8: //Up+left
-                player.position.y += 5 * player.velocity / Math.sqrt(2)
-                player.position.x += 5 * player.velocity / Math.sqrt(2)
+                controller.position.y += 5 * player.velocity / Math.sqrt(2)
+                controller.position.x += 5 * player.velocity / Math.sqrt(2)
                 break;
             default:
                 return
         }
+
+        //Check collisions
+        //const collidedBlocksDistances = [[], []] //Storage arrays of distance from player to collided blocks
+        collisionTiles.forEach(block => {
+            //block.draw() //Draw collisionTiles
+            const cRightDistance = ((player.position.x - controller.position.x + 45) - (block.position.x)) //Right Distance
+            const cLeftDistance = ((player.position.x - controller.position.x) - (block.position.x + Boundary.width)) //Left Distance
+            const cUpDistance = ((player.position.y - controller.position.y + 60) - (block.position.y + Boundary.height)) //Up Distance
+            const cDownDistance = ((player.position.y - controller.position.y + 80) - (block.position.y)) //Down Distance
+            if (cRightDistance >= 0 && cLeftDistance <= 0 && cUpDistance <= 0 && cDownDistance >= 0) {
+                switch (player.direction) {
+                    case 1: //Up
+                    case 5: //Down
+                        controller.position.y = rollbackPosition.y
+                        return;
+                    case 3: //Right
+                    case 7: //Left
+                        controller.position.x = rollbackPosition.x
+                        return;
+                    default:
+                        controller.position.x = rollbackPosition.x
+                        controller.position.y = rollbackPosition.y
+                        return;
+                        //Pushes distance values to it's respective array
+                        collidedBlocksDistances[0].push(cRightDistance)
+                        collidedBlocksDistances[1].push(cUpDistance)
+                }
+            }
+        })
+        /*
+        //Remove repeated values on the same array
+        collidedBlocksDistances[0] = collidedBlocksDistances[0].filter((element, index) => { //Right Distance
+            return collidedBlocksDistances[0].indexOf(element) === index;
+        });
+        collidedBlocksDistances[1] = collidedBlocksDistances[1].filter((element, index) => { //Up Distance
+            return collidedBlocksDistances[1].indexOf(element) === index;
+        });
+
+        if (collidedBlocksDistances[0].length === 1) { //Colliding on Right or Left
+            controller.position.x = rollbackPosition.x
+        }
+        if (collidedBlocksDistances[1].length === 1) { //Colliding on Up or Down
+            controller.position.y = rollbackPosition.y
+        }
+
+        console.log(collidedBlocksDistances[0])
+        console.log(collidedBlocksDistances[1])
+        */
     }
 
     attack() {
@@ -207,26 +258,26 @@ class Player {
 
 class Background {
     constructor({
-        image = backgroundImage,
-        position = { x: (canvas.width / 2 - 24), y: (canvas.height / 2 - 48) } //Position of background starts at (x: 0, y: 0) relative to player
+        image = backgroundImage
     }) {
         this.image = image
-        this.position = position
     }
 
-    draw(x, y) {
-        c.drawImage(this.image, x + this.position.x, y + this.position.y)
+    draw(x = 0, y = 0) {
+        c.drawImage(this.image, x + controller.position.x, y + controller.position.y)
     }
 }
 
 class Controller {
     constructor({
         t = 0, //Count number of frames since animate starts
+        position = { x: -500, y: -900 },
         lastKeyWS = '', //Was 'w' or 's' the Last Key Pressed
         lastKeyAD = '', //Was 'a' or 'd' the Last Key Pressed
         moveKeysDown = { w: isKeyDown('w'), a: isKeyDown('a'), s: isKeyDown('s'), d: isKeyDown('d') },
         attackKeyDown = { space: isKeyDown(' ') }
     }) {
+        this.position = position
         this.t = t
         this.lastKeyWS = lastKeyWS
         this.lastKeyAD = lastKeyAD
@@ -267,9 +318,9 @@ class Boundary {
         this.height = 48
     }
 
-    draw(x, y) { //x and y are the offset coordinate of player position
+    draw(x = 0, y = 0) { //x and y are the offset coordinate of player position
         c.fillStyle = 'rgba(255, 0, 0, 0.5)'
-        c.fillRect(this.position.x + x, this.position.y + y, this.width, this.height)
+        c.fillRect(this.position.x + controller.position.x + x, this.position.y + controller.position.y + y, this.width, this.height)
     }
 }
 
@@ -277,7 +328,7 @@ class Boundary {
 function animate() {
 
     //Animate Player every 10 frames
-    if (controller.t % 10 == 0) {
+    if (controller.t % 10 === 0) {
         switch (player.state) {
             case 'attacking':
                 if (player.frameColumn < player.maxFrames) {
@@ -288,7 +339,7 @@ function animate() {
                 }
                 break;
             case 'walking':
-                if (player.isMoving == true) {
+                if (player.isMoving === true) {
                     player.frameColumn = (player.frameColumn % player.maxFrames) + 1
                 }
                 else {
@@ -301,26 +352,11 @@ function animate() {
         }
     }
 
-    background.draw(player.position.x, player.position.y) //Draw background
-    // collisionTiles.forEach(block => {
-    //     block.draw(player.position.x, player.position.y) //Draw collisionTiles
-    // })
-    const collisionTest = new Boundary({
-        position: {
-            x: 0,
-            y: 0
-        }
-    })
-    collisionTest.draw(background.position.x + player.position.x, background.position.y + player.position.y)
+    background.draw() //Draw background
 
     player.draw() //Draw player
 
     player.move() //Move player
-
-    if (controller.t % 120 == 0) {
-        console.log('player: ' + player.position.x + ', ' + player.position.y)
-        console.log('block: ' + collisionTest.position.x + ', ' + collisionTest.position.y)
-    }
 
 
     controller.t %= 216000 //Reset counter every hour
@@ -341,8 +377,8 @@ const isKeyDown = (() => {
 
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-canvas.width = 1600
-canvas.height = 900
+canvas.width = 1536
+canvas.height = 864
 
 const backgroundImage = new Image()
 backgroundImage.src = './img/trainingMap.png'
