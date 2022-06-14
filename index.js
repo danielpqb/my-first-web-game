@@ -343,7 +343,7 @@ class Monster {
         }
 
         //Monster can't move for 5 seconds every 10 seconds
-        if (controller.t % 600 < 0) {
+        if (controller.t % 600 < 300) {
             this.isMoving = false
             return
         }
@@ -398,29 +398,29 @@ class Monster {
                 this.position.y -= 1 * this.velocity
                 break;
             case 2: //Up+Right
-                this.position.y -= 1 * this.velocity /// Math.sqrt(2)
-                this.position.x += 1 * this.velocity /// Math.sqrt(2)
+                this.position.y -= 1 * this.velocity / Math.sqrt(2)
+                this.position.x += 1 * this.velocity / Math.sqrt(2)
                 break;
             case 3: //Right
                 this.position.x += 1 * this.velocity
                 break;
             case 4: //Down+Right
-                this.position.y += 1 * this.velocity /// Math.sqrt(2)
-                this.position.x += 1 * this.velocity /// Math.sqrt(2)
+                this.position.y += 1 * this.velocity / Math.sqrt(2)
+                this.position.x += 1 * this.velocity / Math.sqrt(2)
                 break;
             case 5: //Down
                 this.position.y += 1 * this.velocity
                 break;
             case 6: //Down+Left
-                this.position.y += 1 * this.velocity /// Math.sqrt(2)
-                this.position.x -= 1 * this.velocity /// Math.sqrt(2)
+                this.position.y += 1 * this.velocity / Math.sqrt(2)
+                this.position.x -= 1 * this.velocity / Math.sqrt(2)
                 break;
             case 7: //Left
                 this.position.x -= 1 * this.velocity
                 break;
             case 8: //Up+left
-                this.position.y -= 1 * this.velocity /// Math.sqrt(2)
-                this.position.x -= 1 * this.velocity /// Math.sqrt(2)
+                this.position.y -= 1 * this.velocity / Math.sqrt(2)
+                this.position.x -= 1 * this.velocity / Math.sqrt(2)
                 break;
             default:
                 return
@@ -518,8 +518,9 @@ class Boundary {
         this.height = 48
     }
 
-    draw() { //x and y are the offset coordinate of player position
-        c.fillStyle = 'rgba(255, 0, 0, 0.5)'
+    draw(red, green, blue, alpha) { //x and y are the offset coordinate of player position
+        const rgba = `rgba(${red}, ${green}, ${blue}, ${alpha})`
+        c.fillStyle = rgba
         c.fillRect(this.position.x + controller.position.x, this.position.y + controller.position.y, this.width, this.height)
     }
 }
@@ -576,7 +577,8 @@ function animate() {
     }
 
     background.draw() //Draw background
-    //collisionTiles.forEach(block => { block.draw() })//Draw collisionTiles
+    //collisionTiles.forEach(block => { block.draw(255, 0, 0, 0.2) })//Draw collisionTiles
+    //spawnableTiles.forEach(block => { block.draw(0, 0, 255, 0.2) })//Draw spawnableTiles
     trainingMapMonsters.forEach((monster) => {
         monster.draw() //Draw monster
         monster.move()
@@ -592,6 +594,9 @@ function animate() {
 
 }
 
+/* ------------------- */
+/* Program starts here */
+/* ------------------- */
 //Return true or false if key is pressed
 const isKeyDown = (() => {
     const state = {};
@@ -602,9 +607,6 @@ const isKeyDown = (() => {
     return (key) => state.hasOwnProperty(key) && state[key] || false;
 })();
 
-/* ------------------- */
-/* Program starts here */
-/* ------------------- */
 //HTML DOM object with a <canvas> tag
 const canvas = document.querySelector('canvas')
 //Window where the game will be shown
@@ -642,8 +644,25 @@ for (let i = 0; i < collisions.length; i += 110) {
 const collisionTiles = []
 collisionsMap.forEach((row, y) => {
     row.forEach((id, x) => {
-        if (id === 3251)
+        if (id === 3251) //CollisionTile Id
             collisionTiles.push(new Boundary({
+                position: {
+                    x: x * Boundary.width, // X coordinate in pixels relative to Background
+                    y: y * Boundary.height // Y coordinate in pixels relative to Background
+                }
+            }))
+    })
+})
+//Same for spawnables tiles
+const spawnablesMap = []
+for (let i = 0; i < spawnables.length; i += 110) {
+    spawnablesMap.push(spawnables.slice(i, 110 + i))
+}
+const spawnableTiles = []
+spawnablesMap.forEach((row, y) => {
+    row.forEach((id, x) => {
+        if (id === 3252) //SpawnableTile Id
+            spawnableTiles.push(new Boundary({
                 position: {
                     x: x * Boundary.width, // X coordinate in pixels relative to Background
                     y: y * Boundary.height // Y coordinate in pixels relative to Background
@@ -654,8 +673,9 @@ collisionsMap.forEach((row, y) => {
 
 //Store monsters related to each map
 const trainingMapMonsters = []
-for (let i = 0; i < 20; i++) {
-    trainingMapMonsters.push(new Monster({ position: { x: 1200, y: 980 } }));
+for (let i = 0; i < 25; i++) {
+    const rnd = Math.floor(Math.random() * spawnableTiles.length)
+    trainingMapMonsters.push(new Monster({ position: {x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y} }));
 }
 
 //Listen to keys pressed down
