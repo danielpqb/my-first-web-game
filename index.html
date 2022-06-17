@@ -6,28 +6,51 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
-    <style>
-        * {
-            background-color: black;
-        }
-        canvas {
-            position: fixed;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="miniBar.css">
+    <link rel="stylesheet" href="statusBar.css">
 </head>
 
 <body>
     <canvas>
-        <img class="backgroundImage">
-        <img class="playerImage">
-        <img class="slimeImage">
     </canvas>
+
+    <main>
+        <!--
+        <div class="miniBar">
+            <div class="hpMiniBar"></div>
+            <div class="separatorMiniBar"></div>
+            <div class="energyMiniBar"></div>
+            <div class="separatorMiniBar"></div>
+            <div class="expMiniBar"></div>
+        </div>
+        -->
+        <div class="status">
+            <div class="statusData">
+                <div class="hpData">
+                    <div class="hpData1">HP: </div>
+                    <div class="hpData2">100/100</div>
+                </div>
+                <div class="energyData">
+                    <div class="energyData1">Energy: </div>
+                    <div class="energyData2">100/100</div>
+                </div>
+                <div class="expData">
+                    <div class="expData1">Lv: 100</div>
+                    <div class="expData2">100/1000</div>
+                </div>
+            </div>
+            <div class="statusBar">
+                <div class="hpStatusBar"></div>
+                <div class="energyStatusBar"></div>
+                <div class="expStatusBar"></div>
+            </div>
+        </div>
+    </main>
 
     <script src="data\collisions.js"></script>
     <script src="data\spawnables.js"></script>
     <script src="index.js"></script>
-
 </body>
 
 </html>

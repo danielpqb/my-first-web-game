@@ -9,7 +9,10 @@ class Player {
         maxFrames = 6,
         state = 'standing',
         snared = false,
-        isMoving = false
+        isMoving = false,
+
+        hp = 100,
+        exp = 0
     }) {
         this.image = image
         this.position = { x: (canvas.width / 2 - 24), y: (canvas.height / 2 - 48) } //Offset player position to be relative to background
@@ -22,6 +25,9 @@ class Player {
         this.state = state
         this.snared = snared
         this.isMoving = isMoving
+
+        this.hp = hp
+        this.exp = exp
     }
 
     changeState(state,) {
@@ -59,6 +65,7 @@ class Player {
     }
 
     draw() {
+        //Character image
         c.save();  // Save the current canvas state
         if (player.isMirrored) {
             c.setTransform(-1, 0, 0, 1, canvas.width, 0); //Invert image horizontaly to the left
@@ -588,6 +595,10 @@ function animate() {
     player.move() //Move player
 
 
+
+    document.querySelector('.playerStatusBar')
+
+
     controller.t %= 216000 //Reset counter every hour
     controller.t++
     window.requestAnimationFrame(animate) //60 FPS
@@ -609,10 +620,9 @@ const isKeyDown = (() => {
 
 //HTML DOM object with a <canvas> tag
 const canvas = document.querySelector('canvas')
-//Window where the game will be shown
-const c = canvas.getContext('2d')
 canvas.width = 1536 //Window width
 canvas.height = 864 //Window height
+const c = canvas.getContext('2d')
 
 //Create images as HTML DOM objects and refer there path
 const backgroundImage = new Image()
@@ -675,7 +685,7 @@ spawnablesMap.forEach((row, y) => {
 const trainingMapMonsters = []
 for (let i = 0; i < 25; i++) {
     const rnd = Math.floor(Math.random() * spawnableTiles.length)
-    trainingMapMonsters.push(new Monster({ position: {x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y} }));
+    trainingMapMonsters.push(new Monster({ position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y } }));
 }
 
 //Listen to keys pressed down
