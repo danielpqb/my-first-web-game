@@ -12,7 +12,7 @@ body {
     width: 100%;
     max-width: 1536px;
     box-sizing: border-box;
-    border: 5px solid rgba(92, 90, 78, 0.9);
+    border: 5px solid rgba(87, 87, 87, 0.9);
     border-radius: 10px;
 }
 
@@ -38,15 +38,20 @@ body {
 .energyData1,
 .expData1 {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
+    align-items: flex-end;
     min-width: fit-content;
-    margin-right: 5px;
-    margin-bottom: 3px;
-    font-weight: 400;
+    font-weight: 700;
+    font-size: 10px;
+    min-width: 16px;
+}
+
+.energyData1 {
+    margin-right: 2px;
 }
 
 .expData1 {
-    margin: 0px;
+    font-size: 10px;
 }
 
 .hpData2,
@@ -59,9 +64,18 @@ body {
     font-size: 15px;
 }
 
+.hpData2 {
+    margin-right: 1px;
+}
+
 .expData2 {
-    margin-top: 4px;
-    font-size: 10px;
+    justify-content: flex-start;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.energyData2 {
+    font-size: 13px;
 }
 
 .statusBar {
@@ -74,20 +88,6 @@ body {
     margin-left: 0px;
 }
 
-/*.statusBar div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-}*/
-
-/*.separatorStatusBar {
-    height: 4px;
-    width: 100%;
-    background-color: rgba(50, 50, 50, 0.9);
-}*/
-
 .hpStatusBar,
 .expStatusBar,
 .energyStatusBar {
@@ -98,22 +98,21 @@ body {
 
 .hpStatusBar {
     width: 100%;
-    height: 12px;
+    height: 16px;
     background-color: rgba(180, 0, 10, 0.8);
     margin-top: 1px;
 }
 
 .energyStatusBar {
     width: 100%;
-    height: 5px;
-    /*background-color: rgba(0, 120, 255, 0.8);*/
+    height: 6px;
     background-color: rgba(235, 213, 91, 0.8);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .expStatusBar {
     width: 10%;
     height: 3px;
     background-color: rgba(192, 192, 192, 1);
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
