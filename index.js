@@ -9,6 +9,7 @@ class Player {
         state = 'standing',
         snared = false,
         isMoving = false,
+        isDead = false,
 
         //Hitbox
         baseHitbox = [],
@@ -16,8 +17,8 @@ class Player {
         hitbox = [],
 
         //Stats
-        hp = 100,
-        maxHp = 100,
+        hp = 1000,
+        maxHp = 1000,
         energy = 20,
         maxEnergy = 20,
         level = 1,
@@ -36,6 +37,7 @@ class Player {
         this.state = state
         this.snared = snared
         this.isMoving = isMoving
+        this.isDead = isDead
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox //Total size of animation
@@ -57,6 +59,28 @@ class Player {
     setHitbox() {
         this.baseHitbox = [0, 0, this.image.width / 6, this.image.height / 4] //Left, Up, Right, Down
         this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] / 3 + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
+    }
+
+    getExp(exp) {
+        if (this.level == this.maxLevel) {
+            this.exp = this.levelExp[this.level]
+            return
+        }
+        this.exp += exp
+        if (this.exp >= this.levelExp[this.level]) {
+            this.exp %= this.levelExp[this.level]
+            this.level += 1
+        }
+    }
+
+    useEnergy(energy) {
+        if (energy > this.energy) {
+            //Can't use skill
+            return
+        }
+        else {
+            this.energy -= energy
+        }
     }
 
     changeState(state) {
@@ -84,6 +108,7 @@ class Player {
             case 'dead':
                 this.frameRow = 4
                 this.maxFrames = 3
+                this.isDead = true
                 break;
 
             default:
@@ -111,11 +136,21 @@ class Player {
             this.baseHitbox[3] //Image Y Position Offset on Canvas
         )
         c.restore(); // Restore the state as it was when this function was called
+
+        //Status bar
+        hpBar.style.width = hpBarMaxWidth * this.hp / this.maxHp + 'px'
+        energyBar.style.width = energyBarMaxWidth * this.energy / this.maxEnergy + 'px'
+        expBar.style.width = hpBarMaxWidth * this.exp / (this.levelExp[this.level]) + 'px'
+        //Status data
+        hpData.innerHTML = this.hp + '/' + this.maxHp
+        energyData.innerHTML = this.energy + '/' + this.maxEnergy
+        levelData.innerHTML = 'Lv: ' + this.level
+
     }
 
     move() {
         //If player is impeded to move, stop here
-        if (this.snared === true || this.state === 'attacking') {
+        if (this.snared === true || this.state === 'attacking' || this.isDead === true) {
             this.isMoving = false
             return
         }
@@ -283,11 +318,17 @@ class Player {
     }
 
     attack() {
-        player.changeState('attacking')
+        this.changeState('attacking')
+        trainingMapMonsters.forEach((monster) => {
+            takeDamage(monster, 20)
+        })
+        takeDamage(player, 50)
+        // player.useEnergy(5)
+        // player.getExp(1)
     }
 
     die() {
-
+        this.changeState('dead')
     }
 }
 
@@ -303,6 +344,7 @@ class Monster {
         state = 'standing',
         snared = false,
         isMoving = false,
+        isDead = false,
 
         //Hitbox
         baseHitbox = [],
@@ -329,6 +371,7 @@ class Monster {
         this.state = state
         this.snared = snared
         this.isMoving = isMoving
+        this.isDead = isDead
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox
@@ -375,6 +418,7 @@ class Monster {
             case 'dead':
                 this.frameRow = 5
                 this.maxFrames = 5
+                this.isDead = true
                 break;
 
             default:
@@ -385,6 +429,7 @@ class Monster {
     }
 
     draw() {
+        //Character
         c.save();  // Save the current canvas state
         if (this.isMirrored) {
             c.setTransform(-1, 0, 0, 1, canvas.width, 0); //Invert image horizontaly to the left
@@ -401,11 +446,17 @@ class Monster {
             this.baseHitbox[3] //Image Y Position Offset on Canvas
         )
         c.restore(); // Restore the state as it was when this function was called
+
+        //HP bar
+        c.fillStyle = 'rgba(0, 0, 0, 0.8)'
+        c.fillRect(this.position.x + controller.position.x + this.hitbox[2] / 2 - 24, this.position.y + controller.position.y + this.hitbox[3] + 10, 64, 4)
+        c.fillStyle = 'rgba(180, 0, 10, 0.8)'
+        c.fillRect(this.position.x + controller.position.x + this.hitbox[2] / 2 - 24, this.position.y + controller.position.y + this.hitbox[3] + 10, 64 * this.hp / this.maxHp, 4)
     }
 
     move() {
         //If monster is impeded to move, stop here
-        if (this.snared === true || this.state === 'attacking') {
+        if (this.snared === true || this.state === 'attacking' || this.isDead === true) {
             this.isMoving = false
             return
         }
@@ -522,6 +573,10 @@ class Monster {
             }
         })
     }
+
+    die() {
+        this.changeState('dead')
+    }
 }
 
 class Background {
@@ -570,7 +625,9 @@ class Controller {
                     this.lastKeyAD = 'd'
                     break;
                 case ' ':
-                    player.attack()
+                    if (player.isDead === false) {
+                        player.attack()
+                    }
                     break;
             }
         })
@@ -616,6 +673,11 @@ function animate() {
                     player.changeState('standing')
                 }
                 break;
+            case 'dead':
+                if (player.frameColumn < player.maxFrames) {
+                    player.frameColumn++
+                } else { break }
+                break;
             default:
                 player.frameColumn = (player.frameColumn % player.maxFrames) + 1
                 break;
@@ -638,6 +700,11 @@ function animate() {
                     else {
                         monster.changeState('standing')
                     }
+                    break;
+                case 'dead':
+                    if (monster.frameColumn < monster.maxFrames) {
+                        monster.frameColumn++
+                    } else { break }
                     break;
                 default:
                     monster.frameColumn = (monster.frameColumn % monster.maxFrames) + 1
@@ -668,6 +735,16 @@ function animate() {
 
 }
 
+function takeDamage(object, dmg) {
+    if (dmg >= object.hp) {
+        object.hp = 0
+        object.die()
+    }
+    else {
+        object.hp -= dmg
+    }
+}
+
 /* ------------------- */
 /* Program starts here */
 /* ------------------- */
@@ -684,6 +761,21 @@ const canvas = document.querySelector('canvas')
 canvas.width = 1536 //Window width
 canvas.height = 864 //Window height
 const c = canvas.getContext('2d')
+
+//HTML DOM objects from player status bar
+const hpBar = document.querySelector('.hpStatusBar')
+const energyBar = document.querySelector('.energyStatusBar')
+const expBar = document.querySelector('.expStatusBar')
+
+//Max width that bars can have (this width represents player max HP)
+const hpBarMaxWidth = hpBar.clientWidth
+const energyBarMaxWidth = energyBar.clientWidth
+const expBarMaxWidth = expBar.clientWidth
+
+//HTML DOM objects from player status data
+const hpData = document.querySelector('.hpData2')
+const energyData = document.querySelector('.energyData2')
+const levelData = document.querySelector('.expData2')
 
 //Create images as HTML DOM objects and refer there path
 const backgroundImage = new Image()

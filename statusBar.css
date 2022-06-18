@@ -109,7 +109,7 @@ body {
 }
 
 .expStatusBar {
-    width: 10%;
+    width: 0%;
     height: 3px;
     background-color: rgba(192, 192, 192, 1);
     margin-bottom: 2px;
