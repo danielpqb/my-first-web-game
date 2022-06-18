@@ -1,7 +1,6 @@
 class Player {
     constructor({
         image = playerImage,
-        velocity = 1,
         direction = 0,
         isMirrored = false,
         frameRow = 1,
@@ -11,12 +10,24 @@ class Player {
         snared = false,
         isMoving = false,
 
+        //Hitbox
+        baseHitbox = [],
+        hitboxOffset = [0, 0, 0, 0], //Left, Up, Right, Down distance offset
+        hitbox = [],
+
+        //Stats
         hp = 100,
-        exp = 0
+        maxHp = 100,
+        energy = 20,
+        maxEnergy = 20,
+        level = 1,
+        maxLevel = 10,
+        exp = 0, //Current exp (reset every time player levels up)
+        levelExp = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], //Exp necessary to level up from 0 to 10
+        velocity = 1
     }) {
         this.image = image
         this.position = { x: (canvas.width / 2 - 24), y: (canvas.height / 2 - 48) } //Offset player position to be relative to background
-        this.velocity = velocity
         this.direction = direction
         this.isMirrored = isMirrored
         this.frameRow = frameRow
@@ -26,11 +37,30 @@ class Player {
         this.snared = snared
         this.isMoving = isMoving
 
+        //Hitbox (Left, Up, Right, Down)
+        this.baseHitbox = baseHitbox //Total size of animation
+        this.hitboxOffset = hitboxOffset //Offset in pixels
+        this.hitbox = hitbox //Real hitbox of player
+
+        //Stats
         this.hp = hp
+        this.maxHp = maxHp
+        this.energy = energy
+        this.maxEnergy = maxEnergy
+        this.level = level
+        this.maxLevel = maxLevel
         this.exp = exp
+        this.levelExp = levelExp
+        this.velocity = velocity
     }
 
-    changeState(state,) {
+    setHitbox() {
+        this.baseHitbox = [0, 0, this.image.width / 6, this.image.height / 4] //Left, Up, Right, Down
+        this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] / 3 + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
+        console.log(this.hitbox)
+    }
+
+    changeState(state) {
         if (this.state != state) {
             this.frameColumn = 1
             this.state = state
@@ -72,22 +102,22 @@ class Player {
         }
         c.drawImage(
             this.image,
-            this.image.width / 6 * (this.frameColumn - 1), //Image Crop Xo
-            this.image.height / 4 * (this.frameRow - 1), //Image Crop Yo
-            this.image.width / 6, //Image Crop X Offset
-            this.image.height / 4,//Image Crop Y Offset
-            canvas.width / 2 - this.image.width / 12, //Image Xo Position on Canvas
-            canvas.height / 2 - this.image.height / 8,//Image Yo Position on Canvas
-            this.image.width / 6, //Image X Position Offset on Canvas
-            this.image.height / 4 //Image Y Position Offset on Canvas
+            this.baseHitbox[2] * (this.frameColumn - 1), //Image Crop Xo
+            this.baseHitbox[3] * (this.frameRow - 1), //Image Crop Yo
+            this.baseHitbox[2], //Image Crop X Offset
+            this.baseHitbox[3],//Image Crop Y Offset
+            canvas.width / 2 - this.baseHitbox[2] / 2, //Image Xo Position on Canvas
+            canvas.height / 2 - this.baseHitbox[3] / 2,//Image Yo Position on Canvas
+            this.baseHitbox[2], //Image X Position Offset on Canvas
+            this.baseHitbox[3] //Image Y Position Offset on Canvas
         )
         c.restore(); // Restore the state as it was when this function was called
     }
 
     move() {
         //If player is impeded to move, stop here
-        if (player.snared === true || player.state === 'attacking') {
-            player.isMoving = false
+        if (this.snared === true || this.state === 'attacking') {
+            this.isMoving = false
             return
         }
 
@@ -103,7 +133,7 @@ class Player {
             !controller.moveKeysDown.s &&
             !controller.moveKeysDown.d
         ) {
-            player.isMoving = false
+            this.isMoving = false
             return
         }
 
@@ -133,72 +163,72 @@ class Player {
         if (controller.moveKeysDown.d && controller.moveKeysDown.a) { //Both pressed
             if (controller.lastKeyAD === 'd') {
                 x = 3 //Right
-                player.isMirrored = false //Points Right
+                this.isMirrored = false //Points Right
             }
             else {
                 x = 7 //Left
-                player.isMirrored = true //Points Left
+                this.isMirrored = true //Points Left
             }
         }
         else { //Only one pressed
             if (controller.moveKeysDown.d) {
                 x = 3 //Right
-                player.isMirrored = false //Points Right
+                this.isMirrored = false //Points Right
             }
             else if (controller.moveKeysDown.a) {
                 x = 7 //Left
-                player.isMirrored = true //Points Left
+                this.isMirrored = true //Points Left
             }
         }
 
         //Trying to walk on both axis
         if (x > 0 && y > 0) {
             if (y === 1 && x === 7) {
-                player.direction = 8 //Up+Left
+                this.direction = 8 //Up+Left
             }
             else {
-                player.direction = (x + y) / 2 //Up+Right || Down+Right || Down+Left
+                this.direction = (x + y) / 2 //Up+Right || Down+Right || Down+Left
             }
         }
         //Trying to walk on only one axis
         else {
-            player.direction = x + y //Up || Down || Right || Left
+            this.direction = x + y //Up || Down || Right || Left
         }
 
         //Save position to rollback if collided
         const rollbackPosition = { x: controller.position.x, y: controller.position.y }
 
         //Move background position if player is trying to move (player starts to move)
-        player.isMoving = true
-        player.changeState('walking')
-        switch (player.direction) {
+        this.isMoving = true
+        this.changeState('walking')
+        switch (this.direction) {
             case 1: //Up
-                controller.position.y += 5 * player.velocity
+                controller.position.y += 5 * this.velocity
                 break;
             case 2: //Up+Right
-                controller.position.y += 5 * player.velocity / Math.sqrt(2)
-                controller.position.x -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.y += 5 * this.velocity / Math.sqrt(2)
+                controller.position.x -= 5 * this.velocity / Math.sqrt(2)
                 break;
             case 3: //Right
-                controller.position.x -= 5 * player.velocity
+                controller.position.x -= 5 * this.velocity
                 break;
             case 4: //Down+Right
-                controller.position.y -= 5 * player.velocity / Math.sqrt(2)
-                controller.position.x -= 5 * player.velocity / Math.sqrt(2)
+                controller.position.y -= 5 * this.velocity / Math.sqrt(2)
+                controller.position.x -= 5 * this.velocity / Math.sqrt(2)
                 break;
             case 5: //Down
-                controller.position.y -= 5 * player.velocity
+                controller.position.y -= 5 * this.velocity
                 break;
             case 6: //Down+Left
-                controller.position.y -= 5 * player.velocity / Math.sqrt(2)
-                controller.position.x += 5 * player.velocity / Math.sqrt(2)
+                controller.position.y -= 5 * this.velocity / Math.sqrt(2)
+                controller.position.x += 5 * this.velocity / Math.sqrt(2)
                 break;
             case 7: //Left
-                controller.position.x += 5 * player.velocity
+                controller.position.x += 5 * this.velocity
                 break;
             case 8: //Up+left
-                controller.position.y += 5 * player.velocity / Math.sqrt(2)
-                controller.position.x += 5 * player.velocity / Math.sqrt(2)
+                controller.position.y += 5 * this.velocity / Math.sqrt(2)
+                controller.position.x += 5 * this.velocity / Math.sqrt(2)
                 break;
             default:
                 return
@@ -208,12 +238,12 @@ class Player {
         //const collidedBlocksDistances = [[], []] //Storage arrays of distance from player to collided blocks
         collisionTiles.forEach(block => {
             //block.draw() //Draw collisionTiles
-            const cRightDistance = ((player.position.x - controller.position.x + 45) - (block.position.x)) //Right Distance
-            const cLeftDistance = ((player.position.x - controller.position.x) - (block.position.x + Boundary.width)) //Left Distance
-            const cUpDistance = ((player.position.y - controller.position.y + 60) - (block.position.y + Boundary.height)) //Up Distance
-            const cDownDistance = ((player.position.y - controller.position.y + 80) - (block.position.y)) //Down Distance
+            const cLeftDistance = ((this.position.x - controller.position.x + this.hitbox[0]) - (block.position.x + Boundary.width)) //Left Distance
+            const cUpDistance = ((this.position.y - controller.position.y + this.hitbox[1]) - (block.position.y + Boundary.height)) //Up Distance
+            const cRightDistance = ((this.position.x - controller.position.x + this.hitbox[2]) - (block.position.x)) //Right Distance
+            const cDownDistance = ((this.position.y - controller.position.y + this.hitbox[3]) - (block.position.y)) //Down Distance
             if (cRightDistance >= 0 && cLeftDistance <= 0 && cUpDistance <= 0 && cDownDistance >= 0) {
-                switch (player.direction) {
+                switch (this.direction) {
                     case 1: //Up
                     case 5: //Down
                         controller.position.y = rollbackPosition.y
@@ -266,7 +296,6 @@ class Monster {
     constructor({
         position = { x: 0, y: 0 }, //Relative to background
         image = slimeImage,
-        velocity = 1,
         direction = 0,
         isMirrored = false,
         frameRow = 1,
@@ -274,11 +303,25 @@ class Monster {
         maxFrames = 4,
         state = 'standing',
         snared = false,
-        isMoving = false
+        isMoving = false,
+
+        //Hitbox
+        baseHitbox = [],
+        hitboxOffset = [0, 0, 0, 0], //Left, Up, Right, Down distance offset
+        hitbox = [],
+
+        //Stats
+        hp = 100,
+        maxHp = 100,
+        energy = 20,
+        maxEnergy = 20,
+        level = 1,
+        maxLevel = 10,
+        velocity = 1
+
     }) {
         this.position = position
         this.image = image
-        this.velocity = velocity
         this.direction = direction
         this.isMirrored = isMirrored
         this.frameRow = frameRow
@@ -287,6 +330,27 @@ class Monster {
         this.state = state
         this.snared = snared
         this.isMoving = isMoving
+
+        //Hitbox (Left, Up, Right, Down)
+        this.baseHitbox = baseHitbox
+        this.hitboxOffset = hitboxOffset
+        this.hitbox = hitbox
+
+        //Stats
+        this.hp = hp
+        this.maxHp = maxHp
+        this.energy = energy
+        this.maxEnergy = maxEnergy
+        this.level = level
+        this.maxLevel = maxLevel
+        this.velocity = velocity
+    }
+
+    setHitbox() {
+        this.baseHitbox = [0, 0, this.image.width / 7, this.image.height / 5] //Left, Up, Right, Down
+        this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
+        console.log(this.hitbox)
+        console.log(this.baseHitbox)
     }
 
     changeState(state) {
@@ -330,14 +394,14 @@ class Monster {
         }
         c.drawImage(
             this.image,
-            this.image.width / 7 * (this.frameColumn - 1), //Image Crop Xo
-            this.image.height / 5 * (this.frameRow - 1), //Image Crop Yo
-            this.image.width / 7, //Image Crop X Offset
-            this.image.height / 5, //Image Crop Y Offset
+            this.baseHitbox[2] * (this.frameColumn - 1), //Image Crop Xo
+            this.baseHitbox[3] * (this.frameRow - 1), //Image Crop Yo
+            this.baseHitbox[2], //Image Crop X Offset
+            this.baseHitbox[3], //Image Crop Y Offset
             controller.position.x + this.position.x, //Image Xo Position on Canvas
             controller.position.y + this.position.y, //Image Yo Position on Canvas
-            this.image.width / 7, //Image X Position Offset on Canvas
-            this.image.height / 5 //Image Y Position Offset on Canvas
+            this.baseHitbox[2], //Image X Position Offset on Canvas
+            this.baseHitbox[3] //Image Y Position Offset on Canvas
         )
         c.restore(); // Restore the state as it was when this function was called
     }
@@ -436,10 +500,10 @@ class Monster {
         //Check collisions
         //const collidedBlocksDistances = [[], []] //Storage arrays of distance from monster to collided blocks
         collisionTiles.forEach(block => {
-            const cRightDistance = ((this.position.x + 80) - (block.position.x)) //Right Distance
-            const cLeftDistance = ((this.position.x + 20) - (block.position.x + Boundary.width)) //Left Distance
-            const cUpDistance = ((this.position.y + 40) - (block.position.y + Boundary.height)) //Up Distance
-            const cDownDistance = ((this.position.y + 70) - (block.position.y)) //Down Distance
+            const cLeftDistance = ((this.position.x + this.hitbox[0]) - (block.position.x + Boundary.width)) //Left Distance
+            const cUpDistance = ((this.position.y + this.hitbox[1]) - (block.position.y + Boundary.height)) //Up Distance
+            const cRightDistance = ((this.position.x + this.hitbox[2]) - (block.position.x)) //Right Distance
+            const cDownDistance = ((this.position.y + this.hitbox[3]) - (block.position.y)) //Down Distance
             if (cRightDistance >= 0 && cLeftDistance <= 0 && cUpDistance <= 0 && cDownDistance >= 0) {
                 switch (this.direction) {
                     case 1: //Up
@@ -535,8 +599,9 @@ class Boundary {
 //Do something every frame
 function animate() {
 
-    //Animate Player every 10 frames
+    //Animate Characters every 10 frames
     if (controller.t % 10 === 0) {
+        //Player
         switch (player.state) {
             case 'attacking':
                 if (player.frameColumn < player.maxFrames) {
@@ -558,6 +623,7 @@ function animate() {
                 player.frameColumn = (player.frameColumn % player.maxFrames) + 1
                 break;
         }
+        //Monsters
         trainingMapMonsters.forEach((monster) => {
             switch (monster.state) {
                 case 'attacking':
@@ -583,22 +649,22 @@ function animate() {
         })
     }
 
+    //Background and Tiletypes
     background.draw() //Draw background
     //collisionTiles.forEach(block => { block.draw(255, 0, 0, 0.2) })//Draw collisionTiles
     //spawnableTiles.forEach(block => { block.draw(0, 0, 255, 0.2) })//Draw spawnableTiles
+
+    //Monsters
     trainingMapMonsters.forEach((monster) => {
         monster.draw() //Draw monster
         monster.move()
     })
 
+    //Player
     player.draw() //Draw player
     player.move() //Move player
 
-
-
-    document.querySelector('.playerStatusBar')
-
-
+    //Controller
     controller.t %= 216000 //Reset counter every hour
     controller.t++
     window.requestAnimationFrame(animate) //60 FPS
@@ -611,10 +677,8 @@ function animate() {
 //Return true or false if key is pressed
 const isKeyDown = (() => {
     const state = {};
-
     window.addEventListener('keyup', (e) => state[e.key] = false);
     window.addEventListener('keydown', (e) => state[e.key] = true);
-
     return (key) => state.hasOwnProperty(key) && state[key] || false;
 })();
 
@@ -632,10 +696,10 @@ playerImage.src = './img/player.png'
 const slimeImage = new Image()
 slimeImage.src = './img/slime.png'
 
-//Instanciate Classes
+//Instanciate Objects
 const controller = new Controller({ position: { x: -800, y: -800 } }) //Relative to Canvas
 const background = new Background({})
-const player = new Player({})
+const player = new Player({ hitboxOffset: [0, 50, 0, -20] })
 
 // Get collisions data and slice it.
 // Each array inside collisionsMap will have a size of map width (in tiles).
@@ -683,13 +747,24 @@ spawnablesMap.forEach((row, y) => {
 
 //Store monsters related to each map
 const trainingMapMonsters = []
-for (let i = 0; i < 25; i++) {
+for (let i = 0; i < 250; i++) {
     const rnd = Math.floor(Math.random() * spawnableTiles.length)
-    trainingMapMonsters.push(new Monster({ position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y } }));
+    trainingMapMonsters.push(new Monster({
+        position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y },
+        hitboxOffset: [15, 30, -15, -30]
+    }));
 }
 
-//Listen to keys pressed down
-controller.listenKeysDown()
+window.onload = () => {
+    //Set some properties of objects
+    player.setHitbox()
+    trainingMapMonsters.forEach((monster) => {
+        monster.setHitbox()
+    })
 
-//Animate game every frame (Infinite loop that is executed 60 times per second)
-animate()
+    //Listen to keys pressed down
+    controller.listenKeysDown()
+
+    //Animate game every frame (Infinite loop that is executed 60 times per second)
+    animate()
+}
