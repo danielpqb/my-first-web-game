@@ -57,7 +57,6 @@ class Player {
     setHitbox() {
         this.baseHitbox = [0, 0, this.image.width / 6, this.image.height / 4] //Left, Up, Right, Down
         this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] / 3 + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
-        console.log(this.hitbox)
     }
 
     changeState(state) {
@@ -349,8 +348,6 @@ class Monster {
     setHitbox() {
         this.baseHitbox = [0, 0, this.image.width / 7, this.image.height / 5] //Left, Up, Right, Down
         this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
-        console.log(this.hitbox)
-        console.log(this.baseHitbox)
     }
 
     changeState(state) {
@@ -747,7 +744,7 @@ spawnablesMap.forEach((row, y) => {
 
 //Store monsters related to each map
 const trainingMapMonsters = []
-for (let i = 0; i < 250; i++) {
+for (let i = 0; i < 15; i++) {
     const rnd = Math.floor(Math.random() * spawnableTiles.length)
     trainingMapMonsters.push(new Monster({
         position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y },
