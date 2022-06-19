@@ -145,7 +145,6 @@ class Player {
         hpData.innerHTML = this.hp + '/' + this.maxHp
         energyData.innerHTML = this.energy + '/' + this.maxEnergy
         levelData.innerHTML = 'Lv: ' + this.level
-
     }
 
     move() {
@@ -319,12 +318,14 @@ class Player {
 
     attack() {
         this.changeState('attacking')
-        trainingMapMonsters.forEach((monster) => {
-            takeDamage(monster, 20)
-        })
-        takeDamage(player, 50)
-        // player.useEnergy(5)
-        // player.getExp(1)
+        useSkill(this, 0)
+
+         trainingMapMonsters.forEach((monster) => {
+             takeDamage(monster, 20)
+         })
+         takeDamage(player, 50)
+         player.useEnergy(5)
+         player.getExp(1)
     }
 
     die() {
@@ -625,7 +626,7 @@ class Controller {
                     this.lastKeyAD = 'd'
                     break;
                 case ' ':
-                    if (player.isDead === false) {
+                    if (player.isDead === false && player.state != 'attacking') {
                         player.attack()
                     }
                     break;
@@ -647,6 +648,63 @@ class Boundary {
         const rgba = `rgba(${red}, ${green}, ${blue}, ${alpha})`
         c.fillStyle = rgba
         c.fillRect(this.position.x + controller.position.x, this.position.y + controller.position.y, this.width, this.height)
+    }
+}
+
+class Skill {
+    constructor({
+        id,
+        activationId,
+        duration,
+        creationTime,
+        caster,
+        targets = [],
+        hitboxSize = { width: 0, height: 0 }, //[width, height]
+        hitboxOffset = { x: 0, y: 0 }, //[x, y] Distance in pixels
+        hits = 1,
+        hitInterval
+    }) {
+        this.id = id
+        this.activationId = activationId
+        this.duration = duration
+        this.creationTime = creationTime
+        this.caster = caster
+        this.targets = targets
+        this.hitboxSize = hitboxSize
+        this.hitboxOffset = hitboxOffset
+        this.hits = hits
+        this.hitInterval = hitInterval
+    }
+
+    getSkillInfo() {
+        this.duration = skillsInfo[this.id].duration
+        this.hitboxSize = skillsInfo[this.id].hitboxSize
+        this.hitboxOffset = skillsInfo[this.id].hitboxOffset
+        this.hits = skillsInfo[this.id].hits
+        this.hitInterval = skillsInfo[this.id].hitInterval
+    }
+
+    isActive() {
+        //Disactivate skill if duration is over
+        if (controller.t > this.duration + this.creationTime) {
+            activeSkills.forEach((skill, i) => {
+                if (skill.activationId == this.activationId) {
+                    activeSkills.splice(i, 1)
+                }
+            })
+        }
+    }
+
+    drawHitbox() {
+        //Should this skill still be active?
+        this.isActive()
+
+        c.fillStyle = 'rgba(0, 0, 255, 0.2)'
+        c.fillRect(this.caster.position.x + this.hitboxOffset.x, this.caster.position.y + this.hitboxOffset.y, this.hitboxSize.width, this.hitboxSize.height)
+    }
+
+    getTargets() {
+
     }
 }
 
@@ -728,6 +786,13 @@ function animate() {
     player.draw() //Draw player
     player.move() //Move player
 
+    //Active Skills
+    activeSkills.forEach((skill) => {
+        skill.isActive()
+        skill.drawHitbox()
+        skill.getTargets()
+    })
+
     //Controller
     controller.t %= 216000 //Reset counter every hour
     controller.t++
@@ -743,6 +808,26 @@ function takeDamage(object, dmg) {
     else {
         object.hp -= dmg
     }
+}
+
+function useSkill(object, id) {
+
+    skActId++
+
+    const skill = new Skill({ id: id, caster: object, activationId: skActId })
+    skill.creationTime = controller.t
+    skill.getSkillInfo()
+
+    activeSkills.push(skill)
+
+    // skill.getSkillInfo()
+
+    // skill.drawHitbox()
+
+
+    // skill.getTargets()
+
+    //targets = [],
 }
 
 /* ------------------- */
@@ -833,6 +918,10 @@ spawnablesMap.forEach((row, y) => {
             }))
     })
 })
+
+//Store active skills
+let skActId = 0 //Skill Activation Id
+const activeSkills = []
 
 //Store monsters related to each map
 const trainingMapMonsters = []
