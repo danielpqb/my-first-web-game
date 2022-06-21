@@ -113,6 +113,10 @@ class Monster {
         )
         c.restore(); // Restore the state as it was when this function was called
 
+        //Hitbox
+        // c.fillStyle = 'rgba(255, 0, 0, 0.5)'
+        // c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2]-this.hitbox[0], this.hitbox[3]-this.hitbox[1])
+
         //HP bar
         c.fillStyle = 'rgba(0, 0, 0, 0.8)'
         c.fillRect(this.position.x + controller.position.x + this.hitbox[2] / 2 - 24, this.position.y + controller.position.y + this.hitbox[3] + 10, 64, 4)
@@ -213,12 +217,17 @@ class Monster {
 
         //Check collisions
         //const collidedBlocksDistances = [[], []] //Storage arrays of distance from monster to collided blocks
-        collisionTiles.forEach(block => {
-            const cLeftDistance = ((this.position.x + this.hitbox[0]) - (block.position.x + Boundary.width)) //Left Distance
-            const cUpDistance = ((this.position.y + this.hitbox[1]) - (block.position.y + Boundary.height)) //Up Distance
-            const cRightDistance = ((this.position.x + this.hitbox[2]) - (block.position.x)) //Right Distance
-            const cDownDistance = ((this.position.y + this.hitbox[3]) - (block.position.y)) //Down Distance
-            if (cRightDistance >= 0 && cLeftDistance <= 0 && cUpDistance <= 0 && cDownDistance >= 0) {
+        collisionTiles.forEach((block) => {
+            if (controller.isIntersecting(
+                [(this.position.x + this.hitbox[0]),
+                (this.position.y + this.hitbox[1]),
+                (this.position.x + this.hitbox[2]),
+                (this.position.y + this.hitbox[3])],
+                [(block.position.x + Boundary.width),
+                (block.position.y + Boundary.height),
+                (block.position.x),
+                (block.position.y)])) {
+
                 switch (this.direction) {
                     case 1: //Up
                     case 5: //Down
@@ -241,6 +250,9 @@ class Monster {
     }
 
     die() {
+        if (this.isDead === false) {
+            player.getExp(5)
+        }
         this.changeState('dead')
     }
 }

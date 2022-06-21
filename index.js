@@ -93,11 +93,11 @@ const activeSkills = []
 
 //Store monsters related to each map
 const trainingMapMonsters = []
-for (let i = 0; i < 15; i++) {
+for (let i = 0; i < 50; i++) {
     const rnd = Math.floor(Math.random() * spawnableTiles.length)
     trainingMapMonsters.push(new Monster({
         position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y },
-        hitboxOffset: [15, 30, -15, -30]
+        hitboxOffset: [15, 30, -15, -20]
     }));
 }
 
@@ -192,12 +192,12 @@ function animate() {
     //Player
     player.draw() //Draw player
     player.move() //Move player
+    player.regen() //Regenerate player HP and energy
 
     //Active Skills
     activeSkills.forEach((skill) => {
         skill.isActive()
-        skill.drawHitbox()
-        skill.getTargets()
+        skill.damageTargets()
     })
 
     //Controller

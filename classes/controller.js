@@ -49,22 +49,27 @@ class Controller {
             object.hp -= dmg
         }
     }
-    
+
     useSkill(object, id) {
         skActId++
         const skill = new Skill({ id: id, caster: object, activationId: skActId })
         skill.creationTime = controller.t
         skill.getSkillInfo()
-    
+
         activeSkills.push(skill)
-    
-        // skill.getSkillInfo()
-    
-        // skill.drawHitbox()
-    
-    
-        // skill.getTargets()
-    
-        //targets = [],
+    }
+
+    isIntersecting(block1, block2) {
+        const left = (block1[0] - block2[0])
+        const up = (block1[1] - block2[1])
+        const right = (block1[2] - block2[2])
+        const down = (block1[3] - block2[3])
+
+        if (right >= 0 && left <= 0 && up <= 0 && down >= 0) {
+            return true
+        }
+        else {
+            return false
+        }
     }
 }

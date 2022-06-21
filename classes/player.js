@@ -58,7 +58,7 @@ class Player {
 
     setHitbox() {
         this.baseHitbox = [0, 0, this.image.width / 6, this.image.height / 4] //Left, Up, Right, Down
-        this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] / 3 + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
+        this.hitbox = { left: this.baseHitbox[0] + this.hitboxOffset[0], up: this.baseHitbox[1] + this.hitboxOffset[1], right: this.baseHitbox[2] / 3 + this.hitboxOffset[2], down: this.baseHitbox[3] + this.hitboxOffset[3] }
     }
 
     getExp(exp) {
@@ -74,13 +74,20 @@ class Player {
     }
 
     useEnergy(energy) {
-        if (energy > this.energy) {
-            //Can't use skill
+        //Is it trying to increase energy instead of decrease?
+        if (energy < 0) { //Yes
+            this.energy = Math.min(this.energy - energy, this.maxEnergy)
             return
         }
-        else {
-            this.energy -= energy
+
+        //Does it have this amount of energy to spend?
+        if (energy > this.energy) { //No
+            //Can't use skill
+            return null
         }
+
+        //Energy can be spent
+        this.energy -= energy
     }
 
     changeState(state) {
@@ -270,12 +277,16 @@ class Player {
         //Check collisions
         //const collidedBlocksDistances = [[], []] //Storage arrays of distance from player to collided blocks
         collisionTiles.forEach(block => {
-            //block.draw() //Draw collisionTiles
-            const cLeftDistance = ((this.position.x - controller.position.x + this.hitbox[0]) - (block.position.x + Boundary.width)) //Left Distance
-            const cUpDistance = ((this.position.y - controller.position.y + this.hitbox[1]) - (block.position.y + Boundary.height)) //Up Distance
-            const cRightDistance = ((this.position.x - controller.position.x + this.hitbox[2]) - (block.position.x)) //Right Distance
-            const cDownDistance = ((this.position.y - controller.position.y + this.hitbox[3]) - (block.position.y)) //Down Distance
-            if (cRightDistance >= 0 && cLeftDistance <= 0 && cUpDistance <= 0 && cDownDistance >= 0) {
+            if (controller.isIntersecting(
+                [(this.position.x - controller.position.x + this.hitbox.left),
+                (this.position.y - controller.position.y + this.hitbox.up),
+                (this.position.x - controller.position.x + this.hitbox.right),
+                (this.position.y - controller.position.y + this.hitbox.down)],
+                [(block.position.x + Boundary.width),
+                (block.position.y + Boundary.height),
+                (block.position.x),
+                (block.position.y)])) {
+
                 switch (this.direction) {
                     case 1: //Up
                     case 5: //Down
@@ -317,18 +328,20 @@ class Player {
     }
 
     attack() {
+        if (player.useEnergy(2) === null) {
+            return
+        }
         this.changeState('attacking')
         controller.useSkill(this, 0)
-
-         trainingMapMonsters.forEach((monster) => {
-             controller.takeDamage(monster, 20)
-         })
-         controller.takeDamage(player, 50)
-         player.useEnergy(5)
-         player.getExp(1)
     }
 
     die() {
         this.changeState('dead')
+    }
+
+    regen() {
+        if (controller.t % 60 === 0) {
+            this.useEnergy(-1)
+        }
     }
 }
