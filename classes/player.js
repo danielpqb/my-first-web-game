@@ -322,8 +322,6 @@ class Player {
             controller.position.y = rollbackPosition.y
         }
 
-        console.log(collidedBlocksDistances[0])
-        console.log(collidedBlocksDistances[1])
         */
     }
 

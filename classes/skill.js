@@ -65,7 +65,7 @@ class Skill {
             // break;
             default:
                 this.position.x = this.caster.position.x - controller.position.x + this.hitboxOffset.x - this.hitboxSize.width / 2
-                this.position.y = this.caster.position.y - controller.position.y + this.hitboxOffset.y - this.hitboxSize.height / 2 
+                this.position.y = this.caster.position.y - controller.position.y + this.hitboxOffset.y - this.hitboxSize.height / 2
                 break;
         }
     }
@@ -81,10 +81,7 @@ class Skill {
             this.hitCounter++
             switch (this.caster.constructor.name) {
                 case 'Player':
-                    trainingMapMonsters.forEach((monster) => {
-                        //console.log(controller.isIntersecting([this.position.x, this.position.y, this.position.x + this.hitboxSize.width, this.position.x + this.hitboxSize.height], [monster.position.x + monster.hitbox[0], monster.position.y + monster.hitbox[1], monster.position.x + monster.hitbox[2], monster.position.y + monster.hitbox[3]]))
-                        //console.log([this.position.x, this.position.y, this.position.x + this.hitboxSize.width, this.position.y + this.hitboxSize.height])
-                        //console.log([monster.position.x + monster.hitbox[0], monster.position.y + monster.hitbox[1], monster.position.x + monster.hitbox[2], monster.position.y + monster.hitbox[3]])
+                    maps[0].monsters.forEach((monster) => {
                         if (controller.isIntersecting(
                             [this.position.x,
                             this.position.y,
@@ -98,9 +95,6 @@ class Skill {
 
                             this.targets.push(monster)
                         }
-
-                        // console.log(this.position)
-                        // console.log(monster.position)
                     })
                     break;
                 case 'Monster':

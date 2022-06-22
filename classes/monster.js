@@ -1,7 +1,8 @@
 class Monster {
     constructor({
+        id,
         position = { x: 0, y: 0 }, //Relative to background
-        image = slimeImage,
+        image,
         direction = 0,
         isMirrored = false,
         frameRow = 1,
@@ -11,22 +12,23 @@ class Monster {
         snared = false,
         isMoving = false,
         isDead = false,
+        respawnTime,
 
         //Hitbox
         baseHitbox = [],
-        hitboxOffset = [0, 0, 0, 0], //Left, Up, Right, Down distance offset
+        hitboxOffset = [], //Left, Up, Right, Down distance offset
         hitbox = [],
 
         //Stats
-        hp = 100,
-        maxHp = 100,
-        energy = 20,
-        maxEnergy = 20,
-        level = 1,
-        maxLevel = 10,
-        velocity = 1
+        hp,
+        maxHp,
+        energy,
+        maxEnergy,
+        level,
+        velocity
 
     }) {
+        this.id = id
         this.position = position
         this.image = image
         this.direction = direction
@@ -38,6 +40,7 @@ class Monster {
         this.snared = snared
         this.isMoving = isMoving
         this.isDead = isDead
+        this.respawnTime = respawnTime
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox
@@ -50,13 +53,7 @@ class Monster {
         this.energy = energy
         this.maxEnergy = maxEnergy
         this.level = level
-        this.maxLevel = maxLevel
         this.velocity = velocity
-    }
-
-    setHitbox() {
-        this.baseHitbox = [0, 0, this.image.width / 7, this.image.height / 5] //Left, Up, Right, Down
-        this.hitbox = [this.baseHitbox[0] + this.hitboxOffset[0], this.baseHitbox[1] + this.hitboxOffset[1], this.baseHitbox[2] + this.hitboxOffset[2], this.baseHitbox[3] + this.hitboxOffset[3]]
     }
 
     changeState(state) {
@@ -114,8 +111,8 @@ class Monster {
         c.restore(); // Restore the state as it was when this function was called
 
         //Hitbox
-        // c.fillStyle = 'rgba(255, 0, 0, 0.5)'
-        // c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2]-this.hitbox[0], this.hitbox[3]-this.hitbox[1])
+        //c.fillStyle = 'rgba(255, 0, 0, 0.5)'
+        //c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2] - this.hitbox[0], this.hitbox[3] - this.hitbox[1])
 
         //HP bar
         c.fillStyle = 'rgba(0, 0, 0, 0.8)'
@@ -252,7 +249,19 @@ class Monster {
     die() {
         if (this.isDead === false) {
             player.getExp(5)
+            this.changeState('dead')
+            this.respawn()
         }
-        this.changeState('dead')
+    }
+
+    respawn() {
+        setTimeout(() => {
+            const rnd = Math.floor(Math.random() * spawnableTiles.length)
+            this.position = { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y }
+            this.hp = this.maxHp
+            this.energy = this.maxEnergy
+            this.changeState('standing')
+            this.isDead = false
+        }, this.respawnTime)
     }
 }

@@ -1,47 +1,14 @@
-/* ------------------- */
-/* Program starts here */
-/* ------------------- */
-//Return true or false if key is pressed
-const isKeyDown = (() => {
-    const state = {};
-    window.addEventListener('keyup', (e) => state[e.key] = false);
-    window.addEventListener('keydown', (e) => state[e.key] = true);
-    return (key) => state.hasOwnProperty(key) && state[key] || false;
-})();
-
-//HTML DOM object with a <canvas> tag
-const canvas = document.querySelector('canvas')
-canvas.width = 1536 //Window width
-canvas.height = 864 //Window height
-const c = canvas.getContext('2d')
-
-//HTML DOM objects from player status bar
-const hpBar = document.querySelector('.hpStatusBar')
-const energyBar = document.querySelector('.energyStatusBar')
-const expBar = document.querySelector('.expStatusBar')
-
-//Max width that bars can have (this width represents player max HP)
-const hpBarMaxWidth = hpBar.clientWidth
-const energyBarMaxWidth = energyBar.clientWidth
-const expBarMaxWidth = expBar.clientWidth
-
-//HTML DOM objects from player status data
-const hpData = document.querySelector('.hpData2')
-const energyData = document.querySelector('.energyData2')
-const levelData = document.querySelector('.expData2')
-
-//Create images as HTML DOM objects and refer there path
-const backgroundImage = new Image()
-backgroundImage.src = './img/trainingMap.png'
-const playerImage = new Image()
-playerImage.src = './img/player.png'
-const slimeImage = new Image()
-slimeImage.src = './img/slime.png'
-
-//Instanciate Objects
+/* | Instanciate some Objects | */
+//Controller
 const controller = new Controller({ position: { x: -1000, y: -1000 } }) //Relative to Canvas
+//Background
 const background = new Background({})
+//Player
 const player = new Player({ hitboxOffset: [0, 50, 0, -20] })
+//Monsters
+const monsters = [] //Need to wait DOM objects
+//Maps
+const maps = [] //Need to wait DOM objects
 
 // Get collisions data and slice it.
 // Each array inside collisionsMap will have a size of map width (in tiles).
@@ -91,118 +58,44 @@ spawnablesMap.forEach((row, y) => {
 let skActId = 0 //Skill Activation Id
 const activeSkills = []
 
-//Store monsters related to each map
-const trainingMapMonsters = []
-for (let i = 0; i < 50; i++) {
-    const rnd = Math.floor(Math.random() * spawnableTiles.length)
-    trainingMapMonsters.push(new Monster({
-        position: { x: spawnableTiles[rnd].position.x, y: spawnableTiles[rnd].position.y },
-        hitboxOffset: [15, 30, -15, -20]
-    }));
-}
-
 window.onload = () => {
+    /* | Instanciate objects after DOM is loaded | */
+    //Monsters
+    monstersInfo.forEach((monster) => {
+        monsters.push(new Monster({
+            id: monster.id,
+            hp: monster.maxHp,
+            maxHp: monster.maxHp,
+            energy: monster.maxEnergy,
+            maxEnergy: monster.maxEnergy,
+            level: monster.level,
+            velocity: monster.velocity,
+            respawnTime: monster.respawnTime,
+            image: monster.image,
+            hitboxOffset: monster.hitboxOffset,
+            baseHitbox: [0, 0, monster.image.width / 7, monster.image.height / 5],
+            hitbox: [monster.hitboxOffset[0], monster.hitboxOffset[1], monster.image.width / 7 + monster.hitboxOffset[2], monster.image.height / 5 + monster.hitboxOffset[3]]
+        }))
+    })
+    //Maps
+    mapsInfo.forEach((map) => {
+        maps.push(new Map({
+            name: map.name,
+            nameId: map.nameId,
+            monstersData: map.monstersData
+        }))
+    })
+    //Create monsters on each map
+    maps.forEach((map) => {
+        map.createMonsters()
+    })
+
     //Set some properties of objects
     player.setHitbox()
-    trainingMapMonsters.forEach((monster) => {
-        monster.setHitbox()
-    })
 
     //Listen to keys pressed down
     controller.listenKeysDown()
 
     //Animate game every frame (Infinite loop that is executed 60 times per second)
     animate()
-}
-
-//View
-//Do something every frame
-function animate() {
-    //Animate Characters every 10 frames
-    if (controller.t % 10 === 0) {
-        //Player
-        switch (player.state) {
-            case 'attacking':
-                if (player.frameColumn < player.maxFrames) {
-                    player.frameColumn++
-                }
-                else {
-                    player.changeState('standing')
-                }
-                break;
-            case 'walking':
-                if (player.isMoving === true) {
-                    player.frameColumn = (player.frameColumn % player.maxFrames) + 1
-                }
-                else {
-                    player.changeState('standing')
-                }
-                break;
-            case 'dead':
-                if (player.frameColumn < player.maxFrames) {
-                    player.frameColumn++
-                } else { break }
-                break;
-            default:
-                player.frameColumn = (player.frameColumn % player.maxFrames) + 1
-                break;
-        }
-        //Monsters
-        trainingMapMonsters.forEach((monster) => {
-            switch (monster.state) {
-                case 'attacking':
-                    if (monster.frameColumn < monster.maxFrames) {
-                        monster.frameColumn++
-                    }
-                    else {
-                        monster.changeState('standing')
-                    }
-                    break;
-                case 'walking':
-                    if (monster.isMoving === true) {
-                        monster.frameColumn = (monster.frameColumn % monster.maxFrames) + 1
-                    }
-                    else {
-                        monster.changeState('standing')
-                    }
-                    break;
-                case 'dead':
-                    if (monster.frameColumn < monster.maxFrames) {
-                        monster.frameColumn++
-                    } else { break }
-                    break;
-                default:
-                    monster.frameColumn = (monster.frameColumn % monster.maxFrames) + 1
-                    break;
-            }
-        })
-    }
-
-    //Background and Tiletypes
-    background.draw() //Draw background
-    //collisionTiles.forEach(block => { block.draw(255, 0, 0, 0.2) })//Draw collisionTiles
-    //spawnableTiles.forEach(block => { block.draw(0, 0, 255, 0.2) })//Draw spawnableTiles
-
-    //Monsters
-    trainingMapMonsters.forEach((monster) => {
-        monster.draw() //Draw monster
-        monster.move()
-    })
-
-    //Player
-    player.draw() //Draw player
-    player.move() //Move player
-    player.regen() //Regenerate player HP and energy
-
-    //Active Skills
-    activeSkills.forEach((skill) => {
-        skill.isActive()
-        skill.damageTargets()
-    })
-
-    //Controller
-    controller.t %= 216000 //Reset counter every hour
-    controller.t++
-    window.requestAnimationFrame(animate) //60 FPS
-
 }
