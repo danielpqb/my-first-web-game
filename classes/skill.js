@@ -110,7 +110,7 @@ class Skill {
         this.getTargets()
 
         this.targets.forEach((target) => {
-            controller.takeDamage(target, 75)
+            controller.takeDamage(target, 5 + player.level)
         })
 
         //Should this skill still be active?

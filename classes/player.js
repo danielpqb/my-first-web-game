@@ -243,32 +243,32 @@ class Player {
         this.changeState('walking')
         switch (this.direction) {
             case 1: //Up
-                controller.position.y += 5 * this.velocity
+                controller.position.y += 4 * this.velocity
                 break;
             case 2: //Up+Right
-                controller.position.y += 5 * this.velocity / Math.sqrt(2)
-                controller.position.x -= 5 * this.velocity / Math.sqrt(2)
+                controller.position.y += 4 * this.velocity / Math.sqrt(2)
+                controller.position.x -= 4 * this.velocity / Math.sqrt(2)
                 break;
             case 3: //Right
-                controller.position.x -= 5 * this.velocity
+                controller.position.x -= 4 * this.velocity
                 break;
             case 4: //Down+Right
-                controller.position.y -= 5 * this.velocity / Math.sqrt(2)
-                controller.position.x -= 5 * this.velocity / Math.sqrt(2)
+                controller.position.y -= 4 * this.velocity / Math.sqrt(2)
+                controller.position.x -= 4 * this.velocity / Math.sqrt(2)
                 break;
             case 5: //Down
-                controller.position.y -= 5 * this.velocity
+                controller.position.y -= 4 * this.velocity
                 break;
             case 6: //Down+Left
-                controller.position.y -= 5 * this.velocity / Math.sqrt(2)
-                controller.position.x += 5 * this.velocity / Math.sqrt(2)
+                controller.position.y -= 4 * this.velocity / Math.sqrt(2)
+                controller.position.x += 4 * this.velocity / Math.sqrt(2)
                 break;
             case 7: //Left
-                controller.position.x += 5 * this.velocity
+                controller.position.x += 4 * this.velocity
                 break;
             case 8: //Up+left
-                controller.position.y += 5 * this.velocity / Math.sqrt(2)
-                controller.position.x += 5 * this.velocity / Math.sqrt(2)
+                controller.position.y += 4 * this.velocity / Math.sqrt(2)
+                controller.position.x += 4 * this.velocity / Math.sqrt(2)
                 break;
             default:
                 return
