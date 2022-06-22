@@ -31,3 +31,7 @@ const playerImage = new Image()
 playerImage.src = './img/player.png'
 const slimeImage = new Image()
 slimeImage.src = './img/slime.png'
+const greenslimeImage = new Image()
+greenslimeImage.src = './img/greenslime.png'
+const redslimeImage = new Image()
+redslimeImage.src = './img/redslime.png'

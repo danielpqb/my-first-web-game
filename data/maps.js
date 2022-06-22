@@ -3,7 +3,9 @@ const mapsInfo = [
         name: 'Training Camp',
         nameId: 'training_0',
         monstersData: [
-            { monsterId: 0, qnt: 50 }
+            { monsterId: 0, qnt: 10 },
+            { monsterId: 1, qnt: 10 },
+            { monsterId: 2, qnt: 5 },
         ]
     },
     {

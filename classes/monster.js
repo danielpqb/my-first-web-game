@@ -25,7 +25,8 @@ class Monster {
         energy,
         maxEnergy,
         level,
-        velocity
+        velocity,
+        exp
 
     }) {
         this.id = id
@@ -54,6 +55,7 @@ class Monster {
         this.maxEnergy = maxEnergy
         this.level = level
         this.velocity = velocity
+        this.exp = exp
     }
 
     changeState(state) {
@@ -248,7 +250,7 @@ class Monster {
 
     die() {
         if (this.isDead === false) {
-            player.getExp(5)
+            player.getExp(this.exp)
             this.changeState('dead')
             this.respawn()
         }

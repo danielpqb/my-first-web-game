@@ -74,7 +74,8 @@ window.onload = () => {
             image: monster.image,
             hitboxOffset: monster.hitboxOffset,
             baseHitbox: [0, 0, monster.image.width / 7, monster.image.height / 5],
-            hitbox: [monster.hitboxOffset[0], monster.hitboxOffset[1], monster.image.width / 7 + monster.hitboxOffset[2], monster.image.height / 5 + monster.hitboxOffset[3]]
+            hitbox: [monster.hitboxOffset[0], monster.hitboxOffset[1], monster.image.width / 7 + monster.hitboxOffset[2], monster.image.height / 5 + monster.hitboxOffset[3]],
+            exp: monster.exp
         }))
     })
     //Maps
