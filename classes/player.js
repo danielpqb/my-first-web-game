@@ -22,7 +22,7 @@ class Player {
         energy = 20,
         maxEnergy = 20,
         level = 1,
-        maxLevel = 10,
+        maxLevel = 100,
         exp = 0, //Current exp (reset every time player levels up)
         levelExp = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], //Exp necessary to level up from 0 to 10
         velocity = 1
@@ -62,13 +62,27 @@ class Player {
     }
 
     getExp(exp) {
+        //Can't get more Exp (reached Max Level)
         if (this.level == this.maxLevel) {
-            this.exp = this.levelExp[this.level]
+            this.exp = 0
             return
         }
+
+        //Calculate maxExp of actual level
+        let maxExp
+        if (this.level > this.levelExp.length - 1) {
+            maxExp = this.levelExp[this.levelExp.length - 1]
+        }
+        else {
+            maxExp = this.levelExp[this.level]
+        }
+
+        //Get Exp
         this.exp += exp
-        if (this.exp >= this.levelExp[this.level]) {
-            this.exp %= this.levelExp[this.level]
+
+        //Level goes Up
+        if (this.exp >= maxExp) {
+            this.exp %= maxExp
             this.level += 1
         }
     }
