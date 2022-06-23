@@ -86,9 +86,15 @@ class Monster {
                 this.maxFrames = 6
                 break;
 
-            case 'attacking':
+            case 'walking2':
+                this.frameRow = 3
+                this.maxFrames = 7
+                break;
+
+            case 'aching':
                 this.frameRow = 4
                 this.maxFrames = 3
+                this.snared = true
                 break;
 
             case 'dead':

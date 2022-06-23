@@ -50,10 +50,19 @@ function animate() {
                             monster.changeState('standing')
                         }
                         break;
+                    case 'aching':
+                        if (monster.frameColumn < monster.maxFrames) {
+                            monster.frameColumn++
+                        }
+                        else {
+                            monster.snared = false
+                            monster.changeState('standing')
+                        }
+                        break;
                     case 'dead':
                         if (monster.frameColumn < monster.maxFrames) {
                             monster.frameColumn++
-                        } else { break }
+                        }
                         break;
                     default:
                         monster.frameColumn = (monster.frameColumn % monster.maxFrames) + 1

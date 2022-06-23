@@ -61,6 +61,9 @@ class Controller {
         }
         else {
             object.hp -= dmg
+            if(object.snared === false) {
+                object.changeState('aching')
+            }
         }
     }
 
