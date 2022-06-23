@@ -17,6 +17,9 @@ class Monster {
         numberOfFramesIdling = 0,
         numberOfFramesWalking = 0,
 
+        //Receive [dmg, controller.t] (Temporarily store the damages that this monster has taken and when did it occur)
+        //takingDamages = [],
+
         //Hitbox
         baseHitbox = [],
         hitboxOffset = [], //Left, Up, Right, Down distance offset
@@ -48,6 +51,8 @@ class Monster {
         this.initialFrameOfMovement = initialFrameOfMovement
         this.numberOfFramesIdling = numberOfFramesIdling
         this.numberOfFramesWalking = numberOfFramesWalking
+
+        //this.takingDamages = takingDamages
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox
@@ -122,11 +127,29 @@ class Monster {
         //c.fillStyle = 'rgba(255, 0, 0, 0.5)'
         //c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2] - this.hitbox[0], this.hitbox[3] - this.hitbox[1])
 
+        //Damage taken
+        if (this.takingDamages != undefined) {
+            this.takingDamages.forEach((damageTaken, index) => {
+                if (controller.t - damageTaken.time < 60) {
+                    c.font = "bold 16px Arial";
+                    c.strokeStyle = 'rgba(50, 50, 50, 0.9)';
+                    c.lineWidth = 5;
+                    c.strokeText(damageTaken.damage, this.position.x + controller.position.x + this.baseHitbox[2] / 2, this.position.y + controller.position.y + this.hitbox[3] - (controller.t - damageTaken.time) * 2);
+                    c.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    c.textAlign = 'center';
+                    c.fillText(damageTaken.damage, this.position.x + controller.position.x + this.baseHitbox[2] / 2, this.position.y + controller.position.y + this.hitbox[3] - (controller.t - damageTaken.time) * 2);
+                }
+                else {
+                    this.takingDamages.splice(index, 1)
+                }
+            })
+        }
+
         //HP bar
         c.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        c.fillRect(this.position.x + controller.position.x + this.hitbox[2] / 2 - 24, this.position.y + controller.position.y + this.hitbox[3] + 10, 64, 4)
+        c.fillRect(this.position.x + controller.position.x + this.baseHitbox[2] / 2 - 32, this.position.y + controller.position.y + this.hitbox[3] + 10, 64, 4)
         c.fillStyle = 'rgba(180, 0, 10, 0.8)'
-        c.fillRect(this.position.x + controller.position.x + this.hitbox[2] / 2 - 24, this.position.y + controller.position.y + this.hitbox[3] + 10, 64 * this.hp / this.maxHp, 4)
+        c.fillRect(this.position.x + controller.position.x + this.baseHitbox[2] / 2 - 32, this.position.y + controller.position.y + this.hitbox[3] + 10, 64 * this.hp / this.maxHp, 4)
     }
 
     move() {
