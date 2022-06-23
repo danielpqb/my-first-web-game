@@ -41,22 +41,26 @@ class Controller {
     }
 
     takeDamage(object, dmg) {
-        //Cause damage to object
-        if (dmg >= object.hp) {
-            dmg = object.hp
+        //Create property takingDamages if monster doesn't have it yet
+        if (object.takingDamages == undefined) {
+            object.takingDamages = []
+        }
+
+        //Calculate damage
+        dmg = Math.min(object.hp, dmg)
+
+        //Show damage numbers on screen
+        if (object.isDead === false) {
+            object.takingDamages.push({ damage: dmg, time: this.t })
+        }
+
+        //Reduce object hp
+        if (object.hp - dmg <= 0) {
             object.hp = 0
             object.die()
         }
         else {
             object.hp -= dmg
-        }
-
-        //Create property takingDamages if monster doesn't have it yet
-        if (object.takingDamages == undefined) {
-            object.takingDamages = []
-        }
-        if (object.isDead === false){
-            object.takingDamages.push({damage: dmg, time: this.t})
         }
     }
 
