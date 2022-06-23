@@ -13,6 +13,9 @@ class Monster {
         isMoving = false,
         isDead = false,
         respawnTime,
+        initialFrameOfMovement = controller.t,
+        numberOfFramesIdling = 0,
+        numberOfFramesWalking = 0,
 
         //Hitbox
         baseHitbox = [],
@@ -42,6 +45,9 @@ class Monster {
         this.isMoving = isMoving
         this.isDead = isDead
         this.respawnTime = respawnTime
+        this.initialFrameOfMovement = initialFrameOfMovement
+        this.numberOfFramesIdling = numberOfFramesIdling
+        this.numberOfFramesWalking = numberOfFramesWalking
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox
@@ -130,14 +136,22 @@ class Monster {
             return
         }
 
-        //Monster can't move for 5 seconds every 10 seconds
-        if (controller.t % 600 < 300) {
+        //Monster is idling, so it isn't willing to move
+        if (this.numberOfFramesIdling > controller.t - this.initialFrameOfMovement) {
             this.isMoving = false
             return
         }
 
-        //Wich direction should the monster go? (1 to 8)
-        if (controller.t % 300 == 0) { //Change direction every 5 seconds
+        //Set direction of monster and a random time idling and walking
+        //Monster stay put for 1~5 seconds (numberOfFramesIdling) and walk for 1~5 seconds (numberOfFramesWalking)
+        //Change direction after completing a full move
+        if (controller.t - this.initialFrameOfMovement > this.numberOfFramesIdling + this.numberOfFramesWalking) {
+            //Reroll movement timers
+            this.initialFrameOfMovement = controller.t
+            this.numberOfFramesIdling = 60 + Math.floor(Math.random() * 240)
+            this.numberOfFramesWalking = 60 + Math.floor(Math.random() * 240)
+
+            //Wich direction should the monster go? (1 to 8)
             let y = 0;
             let x = 0;
             const rndY = Math.floor(Math.random() * 2) //Up or Down? 0:Up | 1:Down
