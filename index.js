@@ -70,12 +70,12 @@ window.onload = () => {
             maxEnergy: monster.maxEnergy,
             level: monster.level,
             velocity: monster.velocity,
+            exp: monster.exp,
             respawnTime: monster.respawnTime,
             image: monster.image,
             hitboxOffset: monster.hitboxOffset,
             baseHitbox: [0, 0, monster.image.width / 7, monster.image.height / 5],
             hitbox: [monster.hitboxOffset[0], monster.hitboxOffset[1], monster.image.width / 7 + monster.hitboxOffset[2], monster.image.height / 5 + monster.hitboxOffset[3]],
-            exp: monster.exp
         }))
     })
     //Maps

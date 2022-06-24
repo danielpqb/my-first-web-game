@@ -41,11 +41,6 @@ class Controller {
     }
 
     takeDamage(object, dmg) {
-        //Create property takingDamages if monster doesn't have it yet
-        if (object.takingDamages == undefined) {
-            object.takingDamages = []
-        }
-
         //Calculate damage
         dmg = Math.min(object.hp, dmg)
 

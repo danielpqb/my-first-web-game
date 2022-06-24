@@ -1,7 +1,6 @@
 class Monster {
     constructor({
         id,
-        position = { x: 0, y: 0 }, //Relative to background
         image,
         direction = 0,
         isMirrored = false,
@@ -17,13 +16,10 @@ class Monster {
         numberOfFramesIdling = 0,
         numberOfFramesWalking = 0,
 
-        //Receive [dmg, controller.t] (Temporarily store the damages that this monster has taken and when did it occur)
-        //takingDamages = [],
-
         //Hitbox
-        baseHitbox = [],
+        baseHitbox,
         hitboxOffset = [], //Left, Up, Right, Down distance offset
-        hitbox = [],
+        hitbox,
 
         //Stats
         hp,
@@ -36,7 +32,7 @@ class Monster {
 
     }) {
         this.id = id
-        this.position = position
+        //this.position = position
         this.image = image
         this.direction = direction
         this.isMirrored = isMirrored
@@ -51,8 +47,6 @@ class Monster {
         this.initialFrameOfMovement = initialFrameOfMovement
         this.numberOfFramesIdling = numberOfFramesIdling
         this.numberOfFramesWalking = numberOfFramesWalking
-
-        //this.takingDamages = takingDamages
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox
@@ -134,7 +128,7 @@ class Monster {
         //c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2] - this.hitbox[0], this.hitbox[3] - this.hitbox[1])
 
         //Damage taken
-        if (this.takingDamages != undefined) {
+        if (this.takingDamages != []) {
             this.takingDamages.forEach((damageTaken, index) => {
                 if (controller.t - damageTaken.time < 60) {
                     c.font = "bold 16px Arial";
