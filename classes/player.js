@@ -97,6 +97,7 @@ class Player {
         if (this.exp >= maxExp) {
             this.exp %= maxExp
             this.level += 1
+            this.levelNumbers.push({ value: 'Level Up!', time: controller.t })
         }
     }
 
@@ -208,14 +209,14 @@ class Player {
         //Level
         if (this.levelNumbers.length > 0) {
             this.levelNumbers.forEach((levelNumber, index) => {
-                if (controller.t - levelNumber.time < 60) {
+                if (controller.t - levelNumber.time < 150) {
                     c.font = "bold 16px Arial";
-                    c.strokeStyle = 'rgba(50, 50, 50, 0.9)';
-                    c.lineWidth = 5;
-                    c.strokeText(levelNumber.value, this.position.x - controller.position.x + this.baseHitbox[2] / 2, this.position.y - controller.position.y + this.hitbox[3] - (controller.t - levelNumber.time) * 2);
-                    c.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    c.strokeStyle = 'rgba(20, 20, 20, 0.9)';
+                    c.lineWidth = 4;
+                    c.strokeText(levelNumber.value, canvas.width / 2, this.position.y + this.baseHitbox[3] - 20 - (controller.t - levelNumber.time) / 2);
+                    c.fillStyle = 'rgba(235, 235, 235, 0.9)';
                     c.textAlign = 'center';
-                    c.fillText(levelNumber.value, this.position.x - controller.position.x + this.baseHitbox[2] / 2, this.position.y - controller.position.y + this.hitbox[3] - (controller.t - levelNumber.time) * 2);
+                    c.fillText(levelNumber.value, canvas.width / 2, this.position.y + this.baseHitbox[3] - 20 - (controller.t - levelNumber.time) / 2);
                 }
                 else {
                     this.levelNumbers.splice(index, 1)

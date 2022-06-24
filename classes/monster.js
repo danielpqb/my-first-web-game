@@ -128,11 +128,11 @@ class Monster {
         //c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2] - this.hitbox[0], this.hitbox[3] - this.hitbox[1])
 
         //Numbers
-        if (this.takingDamages != []) {
+        if (this.takingDamages.length > 0) {
             this.takingDamages.forEach((damageTaken, index) => {
                 if (controller.t - damageTaken.time < 60) {
                     c.font = "bold 16px Arial";
-                    c.strokeStyle = 'rgba(50, 50, 50, 0.9)';
+                    c.strokeStyle = 'rgba(100, 50, 50, 0.9)';
                     c.lineWidth = 5;
                     c.strokeText(damageTaken.damage, this.position.x + controller.position.x + this.baseHitbox[2] / 2, this.position.y + controller.position.y + this.hitbox[3] - (controller.t - damageTaken.time) * 2);
                     c.fillStyle = 'rgba(255, 255, 255, 0.9)';

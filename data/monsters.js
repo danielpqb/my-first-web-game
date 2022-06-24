@@ -9,7 +9,7 @@ const monstersInfo = [
         respawnTime: 30000,
         image: slimeImage,
         hitboxOffset: [15, 30, -15, -20],
-        exp: 1
+        exp: 10
     },
     {
         id: 1,
