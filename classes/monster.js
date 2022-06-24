@@ -127,7 +127,7 @@ class Monster {
         //c.fillStyle = 'rgba(255, 0, 0, 0.5)'
         //c.fillRect(this.position.x + controller.position.x + this.hitbox[0], this.position.y + controller.position.y + this.hitbox[1], this.hitbox[2] - this.hitbox[0], this.hitbox[3] - this.hitbox[1])
 
-        //Damage taken
+        //Numbers
         if (this.takingDamages != []) {
             this.takingDamages.forEach((damageTaken, index) => {
                 if (controller.t - damageTaken.time < 60) {

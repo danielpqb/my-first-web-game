@@ -11,6 +11,12 @@ class Player {
         isMoving = false,
         isDead = false,
 
+        //Drawings
+        expNumbers = [],
+        levelNumbers = [],
+        hpNumbers = [],
+        energyNumbers = [],
+
         //Hitbox
         baseHitbox = [],
         hitboxOffset = [0, 0, 0, 0], //Left, Up, Right, Down distance offset
@@ -38,6 +44,12 @@ class Player {
         this.snared = snared
         this.isMoving = isMoving
         this.isDead = isDead
+
+        //Drawings
+        this.expNumbers = expNumbers
+        this.levelNumbers = levelNumbers
+        this.hpNumbers = hpNumbers
+        this.energyNumbers = energyNumbers
 
         //Hitbox (Left, Up, Right, Down)
         this.baseHitbox = baseHitbox //Total size of animation
@@ -79,6 +91,7 @@ class Player {
 
         //Get Exp
         this.exp += exp
+        this.expNumbers.push({ value: exp, time: controller.t })
 
         //Level goes Up
         if (this.exp >= maxExp) {
@@ -157,6 +170,58 @@ class Player {
             this.baseHitbox[3] //Image Y Position Offset on Canvas
         )
         c.restore(); // Restore the state as it was when this function was called
+
+        /* | Numbers | */
+        //Exp
+        if (this.expNumbers.length > 0) {
+            //Sum values that occured on the same time
+            let temp = [this.expNumbers[0]]
+            for (let i = 1; i < this.expNumbers.length; i++) {
+                let found = false
+                for (let a = 0; a < temp.length; a++) {
+                    if (this.expNumbers[i].time === temp[a].time) {
+                        temp[a].value += this.expNumbers[i].value
+                        found = true
+                        break
+                    }
+                }
+                if (found === false) { temp.push(this.expNumbers[i]) }
+            }
+
+            this.expNumbers = temp
+
+            this.expNumbers.forEach((expNumber, index) => {
+                if (controller.t - expNumber.time < 60) {
+                    c.font = "bold 12px Arial";
+                    c.strokeStyle = 'rgba(20, 20, 20, 0.9)';
+                    c.lineWidth = 4;
+                    c.strokeText(expNumber.value + ' xp', canvas.width / 2, this.position.y + this.baseHitbox[3] - 20 - (controller.t - expNumber.time));
+                    c.fillStyle = 'rgba(235, 235, 235, 0.9)';
+                    c.textAlign = 'center';
+                    c.fillText(expNumber.value + ' xp', canvas.width / 2, this.position.y + this.baseHitbox[3] - 20 - (controller.t - expNumber.time));
+                }
+                else {
+                    this.expNumbers.splice(index, 1)
+                }
+            })
+        }
+        //Level
+        if (this.levelNumbers.length > 0) {
+            this.levelNumbers.forEach((levelNumber, index) => {
+                if (controller.t - levelNumber.time < 60) {
+                    c.font = "bold 16px Arial";
+                    c.strokeStyle = 'rgba(50, 50, 50, 0.9)';
+                    c.lineWidth = 5;
+                    c.strokeText(levelNumber.value, this.position.x - controller.position.x + this.baseHitbox[2] / 2, this.position.y - controller.position.y + this.hitbox[3] - (controller.t - levelNumber.time) * 2);
+                    c.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    c.textAlign = 'center';
+                    c.fillText(levelNumber.value, this.position.x - controller.position.x + this.baseHitbox[2] / 2, this.position.y - controller.position.y + this.hitbox[3] - (controller.t - levelNumber.time) * 2);
+                }
+                else {
+                    this.levelNumbers.splice(index, 1)
+                }
+            })
+        }
 
         //Status bar
         hpBar.style.width = hpBarMaxWidth * this.hp / this.maxHp + 'px'
