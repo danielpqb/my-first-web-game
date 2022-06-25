@@ -23,5 +23,5 @@ main {
 
 canvas {
     max-width: 100vw;
-    border-radius: 10px;
+    border-radius: 10px 10px 2px 2px;
 }

@@ -23,14 +23,14 @@ class Player {
         hitbox = [],
 
         //Stats
-        hp = 1000,
-        maxHp = 1000,
+        hp = 50,
+        maxHp = 50,
         energy = 20,
         maxEnergy = 20,
         level = 1,
         maxLevel = 100,
         exp = 0, //Current exp (reset every time player levels up)
-        levelExp = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], //Exp necessary to level up from 0 to 10
+        levelExp = [0, 4, 8, 12, 16, 20, 30, 40, 50, 60, 70], //Exp necessary to level up from 0 to 10
         velocity = 1
     }) {
         this.image = image
@@ -231,7 +231,7 @@ class Player {
         //Status data
         hpData.innerHTML = this.hp + '/' + this.maxHp
         energyData.innerHTML = this.energy + '/' + this.maxEnergy
-        levelData.innerHTML = 'Lv: ' + this.level
+        levelData.innerHTML = 'Level: ' + this.level
     }
 
     move() {

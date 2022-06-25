@@ -12,30 +12,66 @@ body {
     width: 100%;
     max-width: 1536px;
     box-sizing: border-box;
-    border: 5px solid rgba(87, 87, 87, 0.9);
-    border-radius: 10px;
+    border: 5px double rgba(240, 200, 100, 0.3);
+    border-radius: 2px 2px 10px 10px;
+    background-color: rgba(20, 20, 20, 1);
+}
+
+.status * {
+    background-color: rgba(20, 20, 20, 1);
 }
 
 .statusData {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: flex-start;
     min-width: fit-content;
     margin: 1px 5px;
+    width: 90px;
+    min-width: 110px;
+}
+
+.statusData2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+    min-width: fit-content;
+    margin: 1px 5px;
+    min-width: 200px;
+}
+
+.statusData2-1,
+.statusData2-2 {
+    display: flex;
+    min-width: fit-content;
+    width: 200px;
 }
 
 .hpData,
 .energyData,
-.expData {
+.expData,
+.defData,
+.atkData,
+.velData {
     display: flex;
     justify-content: flex-end;
     width: 100%;
 }
 
+.velData,
+.defData {
+    min-width: 62px;
+    width: 62px;
+}
+
 .hpData1,
 .energyData1,
-.expData1 {
+.expData1,
+.defData1,
+.atkData1,
+.velData1 {
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
@@ -43,6 +79,22 @@ body {
     font-weight: 700;
     font-size: 10px;
     min-width: 16px;
+}
+
+.defData1,
+.atkData1,
+.velData1 {
+    font-size: 11px;
+    margin-bottom: 1px;
+    min-width: 25px;
+    justify-content: flex-start;
+    text-shadow: 0 0 8px rgb(255, 255, 255);
+    margin-right: 9px;
+    color: rgb(215, 215, 215);
+}
+
+.velData1 {
+    margin-right: 0px;
 }
 
 .energyData1 {
@@ -55,26 +107,47 @@ body {
 
 .hpData2,
 .energyData2,
-.expData2 {
+.expData2,
+.defData2,
+.atkData2,
+.velData2 {
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    font-weight: 300;
+    font-weight: 400;
     font-size: 15px;
 }
 
 .hpData2 {
+    justify-content: center;
     margin-right: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 2px rgba(255, 0, 0, 0.9);
 }
 
 .expData2 {
     justify-content: flex-start;
-    font-weight: bold;
+    font-weight: 400;
     font-size: 15px;
+    text-shadow: 0 0 2px rgb(255, 255, 255);
+    justify-content: center;
 }
 
 .energyData2 {
+    justify-content: center;
     font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 2px rgba(255, 255, 0, 0.9);
+}
+
+.defData2,
+.atkData2,
+.velData2 {
+    margin-right: 0px;
+    font-size: 15px;
+    padding: 0px 3px;
+    color: rgb(215, 215, 215);
+    text-shadow: 0 0 2px rgb(255, 255, 255);
 }
 
 .statusBar {
@@ -84,6 +157,8 @@ body {
     width: 100%;
     margin: 3px 5px;
     margin-left: 0px;
+    padding-right: 5px;
+    border-right: 5px double rgba(240, 200, 100, 0.2);
 }
 
 .hpStatusBar,
@@ -91,7 +166,7 @@ body {
 .energyStatusBar {
     display: flex;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 20px 1px 20px 1px;
 }
 
 .hpStatusBar {
@@ -105,7 +180,7 @@ body {
     width: 100%;
     height: 6px;
     background-color: rgba(235, 213, 91, 0.8);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 .expStatusBar {
