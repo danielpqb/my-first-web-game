@@ -23,5 +23,5 @@ Tiled | JavaScript | HTML | CSS
 Clone the project
 
 ```bash
-  git clone https://github.com/thiagomagano/pokemon-team-builder-frontend
+  git clone https://github.com/danielpqb/my-first-web-game
 ```
