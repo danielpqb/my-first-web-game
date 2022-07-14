@@ -10,5 +10,5 @@ In this game you can walk through a training map, where you can defeat slimes to
 <a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">[ Slimeland ]</a>
 
 ## Apps used on development
-### <div><img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" height="40px" align="center"/>Tiled<div>
+### <div align="center"><img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" height="40px" align="center"/>Tiled<div>
 
