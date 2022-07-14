@@ -1,4 +1,4 @@
-<div>![Logo](https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png)</div>
+<div src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png" height="180em"></div>
 
 # Slimeland
 A simple game to practice JS.
