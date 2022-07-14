@@ -7,7 +7,7 @@ A simple game to practice JS.
 ## About the app
 In this game you can walk through a training map, where you can defeat slimes to get experience and level up.
 
-## :video_game: Play the game (deploy)
+## Play the game (deploy)
 <a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">Slimeland</a>
 
 ## Techs
