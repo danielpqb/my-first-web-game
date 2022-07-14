@@ -11,4 +11,5 @@ In this game you can walk through a training map, where you can defeat slimes to
 
 ## Apps used on development
 ### Tiled
+<img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" />
 
