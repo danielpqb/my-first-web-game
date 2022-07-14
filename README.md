@@ -11,5 +11,6 @@ In this game you can walk through a training map, where you can defeat slimes to
 
 ## Techs
 ### <div><img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" width="30px" height="30px" align="center"/> Tiled<div>
-### <div><img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" width="30px" height="30px" align="center"/> JS<div>
+### <div><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/javascript-colored.svg" width="30px" height="30px" align="center"/> JavaScript<div>
+
 
