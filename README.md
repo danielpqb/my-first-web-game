@@ -1,4 +1,4 @@
-<div href="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png"></div>
+<img src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png"></img>
 
 # Slimeland
 A simple game to practice JS.
