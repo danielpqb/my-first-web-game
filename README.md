@@ -10,7 +10,7 @@ In this game you can walk through a training map, where you can defeat slimes to
 <a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">[ Slimeland ]</a>
 
 ## Techs
-### Tiled, JavaScript, HTML, CSS
+Tiled, JavaScript, HTML, CSS
 <span>
 <img src="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mapeditor.Tiled.png" width="30px" height="30px" />
 <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/javascript-colored.svg" width="40px" height="30px" />
