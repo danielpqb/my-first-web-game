@@ -20,7 +20,8 @@ Tiled | JavaScript | HTML | CSS
 </span>
 
 ## Run Locally
-Clone the project
+
+### Clone the project
 
 ```bash
   git clone https://github.com/danielpqb/my-first-web-game
