@@ -8,7 +8,7 @@ A simple game to practice JS.
 In this game you can walk through a training map, where you can defeat slimes to get experience and level up.
 
 ## Play the game (deploy)
-# 🎮<a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">Slimeland</a> 🎮
+<a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">🎮 Slimeland 🎮</a>
 
 ## Techs
 Tiled | JavaScript | HTML | CSS
