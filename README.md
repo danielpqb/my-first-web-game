@@ -7,4 +7,4 @@ A simple game to practice JS.
 
 
 ## Deploy
-[[https://pokemonteambuilder.vercel.app](https://danielpqb.github.io/my-first-web-game/)]([https://pokemonteambuilder.vercel.app/](https://danielpqb.github.io/my-first-web-game/))
+<a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">Slimeland</a>
