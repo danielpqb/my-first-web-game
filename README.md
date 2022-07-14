@@ -18,3 +18,10 @@ Tiled | JavaScript | HTML | CSS
 <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/html5-colored.svg" width="40px" height="30px" />
 <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/css3-colored.svg" width="40px" height="30px" />
 </span>
+
+## Run Locally
+Clone the project
+
+```bash
+  git clone https://github.com/thiagomagano/pokemon-team-builder-frontend
+```
