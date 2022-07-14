@@ -1,4 +1,4 @@
-![Logo]()
+![Logo](https://danielpqb.github.io/my-first-web-game/)
 
 # Slimeland
 A simple game to practice JS.
