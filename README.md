@@ -1,5 +1,5 @@
-<img src="https://cdn.discordapp.com/attachments/387391441397350411/996975983750033539/slimeland.png" height="300px"></img>
-<img src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png" height="300px"></img>
+<img src="https://cdn.discordapp.com/attachments/387391441397350411/996975983750033539/slimeland.png" height="220px"></img>
+<img src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png" height="220px"></img>
 
 # Slimeland
 A simple game to practice JS.
