@@ -1,4 +1,4 @@
-<img src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png"></img>
+<img src="https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png" height="180em"></img>
 
 # Slimeland
 A simple game to practice JS.
