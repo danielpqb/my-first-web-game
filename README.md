@@ -1,4 +1,4 @@
-![Logo](https://danielpqb.github.io/my-first-web-game/](https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png)
+![Logo](https://cdn.discordapp.com/attachments/387391441397350411/996955085013799043/unknown.png)
 
 # Slimeland
 A simple game to practice JS.
