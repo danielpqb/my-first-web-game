@@ -24,3 +24,6 @@ Tiled | JavaScript | HTML | CSS
 ```bash
   git clone https://github.com/danielpqb/my-first-web-game
 ```
+
+## Feedback
+If you have any feedback, please contact me at danielpqb@gmail.com
