@@ -8,7 +8,7 @@ A simple game to practice JS.
 In this game you can walk through a training map, where you can defeat slimes to get experience and level up.
 
 ## Play the game (deploy)
-<a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">Slimeland</a>
+<a href="https://danielpqb.github.io/my-first-web-game/" target="_blank">Slimeland</a> <ion-icon name="game-controller-outline"></ion-icon>
 
 ## Techs
 Tiled | JavaScript | HTML | CSS
@@ -28,3 +28,6 @@ Tiled | JavaScript | HTML | CSS
 
 ## Feedback
 If you have any feedback, please contact me at danielpqb@gmail.com
+
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
