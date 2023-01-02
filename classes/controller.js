@@ -93,6 +93,8 @@ class Controller {
   }
 
   mobileTouchHandler() {
+    const NEUTRAL_ZONE_OFFSET = 10;
+
     //TouchStart Event
     document.addEventListener("touchstart", (e) => {
       this.mobileTouchStart = {
@@ -106,7 +108,7 @@ class Controller {
       player.isMoving = true;
 
       //AD
-      if (e.changedTouches[0].screenX > this.mobileTouchStart.x + 20) {
+      if (e.changedTouches[0].screenX > this.mobileTouchStart.x + NEUTRAL_ZONE_OFFSET) {
         this.lastKeyAD = "d";
 
         this.moveKeysDown = {
@@ -114,7 +116,7 @@ class Controller {
           a: false,
           d: true,
         };
-      } else if (e.changedTouches[0].screenX < this.mobileTouchStart.x - 20) {
+      } else if (e.changedTouches[0].screenX < this.mobileTouchStart.x - NEUTRAL_ZONE_OFFSET) {
         this.lastKeyAD = "a";
 
         this.moveKeysDown = {
@@ -131,7 +133,7 @@ class Controller {
       }
 
       //WS
-      if (e.changedTouches[0].screenY < this.mobileTouchStart.y - 20) {
+      if (e.changedTouches[0].screenY < this.mobileTouchStart.y - NEUTRAL_ZONE_OFFSET) {
         this.lastKeyWS = "w";
 
         this.moveKeysDown = {
@@ -139,7 +141,7 @@ class Controller {
           w: true,
           s: false,
         };
-      } else if (e.changedTouches[0].screenY > this.mobileTouchStart.y + 20) {
+      } else if (e.changedTouches[0].screenY > this.mobileTouchStart.y + NEUTRAL_ZONE_OFFSET) {
         this.lastKeyWS = "s";
 
         this.moveKeysDown = {
@@ -165,7 +167,7 @@ class Controller {
         s: false,
         d: false,
       };
-      this.mobileTouchStart = null
+      this.mobileTouchStart = null;
     });
   }
 }
